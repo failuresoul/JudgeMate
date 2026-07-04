@@ -78,15 +78,24 @@
                         </span>
                     </button>
 
-                    <!-- User Profile Dropdown -->
-                    <div class="flex items-center gap-3 border-l border-slate-800 pl-4">
+                    <!-- User Profile Dropdown & Logout -->
+                    <div class="flex items-center gap-3 border-l border-slate-800/80 pl-4">
                         <div class="hidden md:flex flex-col text-right">
-                            <span class="text-sm font-semibold text-slate-200">Admin User</span>
-                            <span class="text-xs text-indigo-400 font-medium">Administrator</span>
+                            <span class="text-sm font-semibold text-slate-200">{{ auth()->user()->name }}</span>
+                            <span class="text-xs text-indigo-400 font-medium">{{ '@' . auth()->user()->username }}</span>
                         </div>
                         <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center font-bold text-white shadow-md">
-                            A
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                         </div>
+                        <!-- Logout Action Form -->
+                        <form method="POST" action="{{ route('logout') }}" class="ml-2">
+                            @csrf
+                            <button type="submit" class="rounded-lg p-1.5 text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors" title="Log Out">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
