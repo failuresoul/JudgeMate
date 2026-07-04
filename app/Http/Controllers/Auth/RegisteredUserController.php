@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
@@ -31,23 +30,28 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'lowercase', 'alpha_dash', 'max:255', 'unique:'.User::class],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'name'     => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'lowercase', 'alpha_dash', 'max:255', 'unique:' . User::class],
+            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role'     => ['required', 'string', 'in:Contestant,ProblemSetter'],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'name'     => $request->name,
             'username' => $request->username,
-            'email' => $request->email,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'status'   => 'pending',  // Must be approved by Admin before access
         ]);
+
+        // Assign the chosen role
+        $user->assignRole($request->role);
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        // Do NOT log them in — redirect to the pending approval page
+        return redirect()->route('auth.pending')
+            ->with('success', 'Registration submitted! Please wait for Admin approval.');
     }
 }

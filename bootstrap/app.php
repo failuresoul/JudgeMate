@@ -11,7 +11,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->redirectGuestsTo('/login');
+        $middleware->redirectUsersTo('/dashboard');
+
+        // Register the custom role-checking middleware under the alias 'role'
+        // Usage: ->middleware('role:Admin') or ->middleware('role:Admin,ProblemSetter')
+        $middleware->alias([
+            'role'     => \App\Http\Middleware\RoleMiddleware::class,
+            'approved' => \App\Http\Middleware\CheckApproved::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

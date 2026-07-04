@@ -26,6 +26,29 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        // Block rejected users immediately
+        if ($user->isRejected()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('auth.pending')
+                ->with('rejected', true)
+                ->with('reason', $user->rejected_reason ?? 'No reason provided.');
+        }
+
+        // Block pending users
+        if ($user->isPending()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('auth.pending');
+        }
+
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard', absolute: false));

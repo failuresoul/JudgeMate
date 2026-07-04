@@ -23,7 +23,14 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'status',
+        'rejected_reason',
     ];
+
+    /** Convenience helpers for status checks */
+    public function isApproved(): bool { return $this->status === 'approved'; }
+    public function isPending(): bool  { return $this->status === 'pending';  }
+    public function isRejected(): bool { return $this->status === 'rejected'; }
 
     /**
      * The attributes that should be hidden for serialization.
