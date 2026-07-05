@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 
 // Root → login page
@@ -29,6 +30,7 @@ Route::middleware(['auth', 'approved'])->group(function () {
 
 // Admin routes — requires login + Admin role
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'approved', 'role:Admin'])->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::post('/users/{user}/approve', [UserManagementController::class, 'approve'])->name('users.approve');
     Route::post('/users/{user}/reject', [UserManagementController::class, 'reject'])->name('users.reject');

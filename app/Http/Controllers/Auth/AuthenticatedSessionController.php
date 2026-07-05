@@ -50,8 +50,16 @@ class AuthenticatedSessionController extends Controller
         }
 
         $request->session()->regenerate();
+        // Forget any previously stored "intended" URL so the role-based
+        // destination is always enforced rather than overridden by a stale session.
+        $request->session()->forget('url.intended');
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Route-based redirect: Admin → /admin, everyone else → /dashboard
+        if ($user->hasRole('Admin')) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('dashboard');
     }
 
     /**

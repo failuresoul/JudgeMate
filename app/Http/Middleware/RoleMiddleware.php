@@ -31,7 +31,8 @@ class RoleMiddleware
 
         // Check whether the user holds at least one of the required roles
         if (! $user->hasAnyRole($roles)) {
-            abort(403, 'Unauthorized – you do not have permission to access this page.');
+            return redirect()->route('dashboard')
+                ->with('error', 'Unauthorized – you do not have permission to access this page.');
         }
 
         return $next($request);

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'User Management - Admin')
 
@@ -52,126 +52,128 @@
                 <p class="text-sm text-slate-500">No users found for this filter.</p>
             </div>
         @else
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="border-b border-slate-800 text-left">
-                        <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">User</th>
-                        <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Role</th>
-                        <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
-                        <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Registered</th>
-                        <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-800/60">
-                    @foreach($users as $user)
-                    <tr class="group hover:bg-slate-800/30 transition-colors duration-100">
-                        {{-- User Info --}}
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-sm font-bold text-white">
-                                    {{ strtoupper(substr($user->name, 0, 1)) }}
-                                </div>
-                                <div>
-                                    <p class="font-medium text-slate-100">{{ $user->name }}</p>
-                                    <p class="text-xs text-slate-500">{{ $user->email }}</p>
-                                </div>
-                            </div>
-                        </td>
-
-                        {{-- Role Badge --}}
-                        <td class="px-6 py-4">
-                            @foreach($user->roles as $role)
-                                @php
-                                    $roleColors = [
-                                        'Contestant'    => 'text-indigo-400 bg-indigo-500/10 ring-indigo-500/20',
-                                        'ProblemSetter' => 'text-violet-400 bg-violet-500/10 ring-violet-500/20',
-                                        'Guest'         => 'text-slate-400 bg-slate-500/10 ring-slate-500/20',
-                                        'Admin'         => 'text-red-400 bg-red-500/10 ring-red-500/20',
-                                    ];
-                                    $color = $roleColors[$role->name] ?? 'text-slate-400 bg-slate-700/50 ring-slate-600/30';
-                                @endphp
-                                <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 {{ $color }}">
-                                    {{ $role->name === 'ProblemSetter' ? 'Judge/Setter' : $role->name }}
-                                </span>
-                            @endforeach
-                        </td>
-
-                        {{-- Status Badge --}}
-                        <td class="px-6 py-4">
-                            @if($user->status === 'pending')
-                                <span class="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-400 ring-1 ring-amber-500/20">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse"></span> Pending
-                                </span>
-                            @elseif($user->status === 'approved')
-                                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/20">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Approved
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-400 ring-1 ring-red-500/20">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-red-400"></span> Rejected
-                                </span>
-                            @endif
-                        </td>
-
-                        {{-- Date --}}
-                        <td class="px-6 py-4 text-xs text-slate-500">
-                            {{ $user->created_at->format('M d, Y') }}<br>
-                            <span class="text-slate-600">{{ $user->created_at->diffForHumans() }}</span>
-                        </td>
-
-                        {{-- Actions --}}
-                        <td class="px-6 py-4 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                @if($user->status !== 'approved')
-                                    {{-- Approve --}}
-                                    <form method="POST" action="{{ route('admin.users.approve', $user) }}" class="inline">
-                                        @csrf
-                                        <button type="submit"
-                                            class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/20 hover:bg-emerald-500/20 transition-colors duration-150"
-                                            onclick="return confirm('Approve {{ addslashes($user->name) }}?')">
-                                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                                            Approve
-                                        </button>
-                                    </form>
-                                @endif
-
-                                @if($user->status !== 'rejected')
-                                    {{-- Reject (opens inline form) --}}
-                                    <button type="button"
-                                        onclick="document.getElementById('reject-form-{{ $user->id }}').classList.toggle('hidden')"
-                                        class="inline-flex items-center gap-1.5 rounded-lg bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-400 ring-1 ring-red-500/20 hover:bg-red-500/20 transition-colors duration-150">
-                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                                        Reject
-                                    </button>
-                                @endif
-                            </div>
-
-                            {{-- Inline reject reason form --}}
-                            @if($user->status !== 'rejected')
-                            <div id="reject-form-{{ $user->id }}" class="hidden mt-2">
-                                <form method="POST" action="{{ route('admin.users.reject', $user) }}">
-                                    @csrf
-                                    <div class="flex gap-2">
-                                        <input type="text" name="reason" placeholder="Reason (optional)"
-                                            class="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs text-slate-200 placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500/50">
-                                        <button type="submit"
-                                            class="rounded-lg bg-red-600 px-2 py-1 text-xs font-semibold text-white hover:bg-red-500 transition-colors">
-                                            Confirm
-                                        </button>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-left">
+                            <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">User</th>
+                            <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Role</th>
+                            <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
+                            <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Registered</th>
+                            <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60">
+                        @foreach($users as $user)
+                        <tr class="group hover:bg-slate-800/30 transition-colors duration-100">
+                            {{-- User Info --}}
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-sm font-bold text-white">
+                                        {{ strtoupper(substr($user->name, 0, 1)) }}
                                     </div>
-                                </form>
-                            </div>
-                            @endif
+                                    <div>
+                                        <p class="font-medium text-slate-100">{{ $user->name }}</p>
+                                        <p class="text-xs text-slate-500">{{ $user->email }}</p>
+                                    </div>
+                                </div>
+                            </td>
 
-                            {{-- Show rejection reason if rejected --}}
-                            @if($user->status === 'rejected' && $user->rejected_reason)
-                                <p class="mt-1 text-xs text-red-400/70 italic text-right">"{{ $user->rejected_reason }}"</p>
-                            @endif
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                            {{-- Role Badge --}}
+                            <td class="px-6 py-4">
+                                @foreach($user->roles as $role)
+                                    @php
+                                        $roleColors = [
+                                            'Contestant'    => 'text-indigo-400 bg-indigo-500/10 ring-indigo-500/20',
+                                            'ProblemSetter' => 'text-violet-400 bg-violet-500/10 ring-violet-500/20',
+                                            'Guest'         => 'text-slate-400 bg-slate-500/10 ring-slate-500/20',
+                                            'Admin'         => 'text-red-400 bg-red-500/10 ring-red-500/20',
+                                        ];
+                                        $color = $roleColors[$role->name] ?? 'text-slate-400 bg-slate-700/50 ring-slate-600/30';
+                                    @endphp
+                                    <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 {{ $color }}">
+                                        {{ $role->name === 'ProblemSetter' ? 'Judge/Setter' : $role->name }}
+                                    </span>
+                                @endforeach
+                            </td>
+
+                            {{-- Status Badge --}}
+                            <td class="px-6 py-4">
+                                @if($user->status === 'pending')
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-400 ring-1 ring-amber-500/20">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse"></span> Pending
+                                    </span>
+                                @elseif($user->status === 'approved')
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/20">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Approved
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-400 ring-1 ring-red-500/20">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-red-400"></span> Rejected
+                                    </span>
+                                @endif
+                            </td>
+
+                            {{-- Date --}}
+                            <td class="px-6 py-4 text-xs text-slate-500">
+                                {{ $user->created_at->format('M d, Y') }}<br>
+                                <span class="text-slate-600">{{ $user->created_at->diffForHumans() }}</span>
+                            </td>
+
+                            {{-- Actions --}}
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    @if($user->status !== 'approved')
+                                        {{-- Approve --}}
+                                        <form method="POST" action="{{ route('admin.users.approve', $user) }}" class="inline">
+                                            @csrf
+                                            <button type="submit"
+                                                class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/20 hover:bg-emerald-500/20 transition-colors duration-150"
+                                                onclick="return confirm('Approve {{ addslashes($user->name) }}?')">
+                                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                                Approve
+                                            </button>
+                                        </form>
+                                    @endif
+
+                                    @if($user->status !== 'rejected')
+                                        {{-- Reject (opens inline form) --}}
+                                        <button type="button"
+                                            onclick="document.getElementById('reject-form-{{ $user->id }}').classList.toggle('hidden')"
+                                            class="inline-flex items-center gap-1.5 rounded-lg bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-400 ring-1 ring-red-500/20 hover:bg-red-500/20 transition-colors duration-150">
+                                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                            Reject
+                                        </button>
+                                    @endif
+                                </div>
+
+                                {{-- Inline reject reason form --}}
+                                @if($user->status !== 'rejected')
+                                <div id="reject-form-{{ $user->id }}" class="hidden mt-2">
+                                    <form method="POST" action="{{ route('admin.users.reject', $user) }}">
+                                        @csrf
+                                        <div class="flex gap-2">
+                                            <input type="text" name="reason" placeholder="Reason (optional)"
+                                                class="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs text-slate-200 placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500/50">
+                                            <button type="submit"
+                                                class="rounded-lg bg-red-600 px-2 py-1 text-xs font-semibold text-white hover:bg-red-500 transition-colors">
+                                                Confirm
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                                @endif
+
+                                {{-- Show rejection reason if rejected --}}
+                                @if($user->status === 'rejected' && $user->rejected_reason)
+                                    <p class="mt-1 text-xs text-red-400/70 italic text-right">"{{ $user->rejected_reason }}"</p>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         @endif
     </div>
 

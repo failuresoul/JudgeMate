@@ -50,6 +50,24 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($user->isPending()) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => 'Your account is pending admin approval.',
+            ]);
+        }
+
+        if ($user->isRejected()) {
+            $reason = $user->rejected_reason ? " Reason: {$user->rejected_reason}" : "";
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => 'Your registration request has been rejected.' . $reason,
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 
