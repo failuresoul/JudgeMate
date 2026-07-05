@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('sidebar')
-<aside id="sidebar-nav" class="fixed inset-y-0 left-0 z-30 w-64 transform -translate-x-full lg:translate-x-0 lg:static lg:inset-0 border-r border-slate-800/60 bg-slate-950 flex flex-col justify-between transition-transform duration-300 ease-in-out">
+<aside id="sidebar-nav" class="relative lg:flex-shrink-0 w-64 flex-none hidden lg:flex flex-col justify-between border-r border-slate-800/60 bg-slate-950 overflow-y-auto transition-transform duration-300 ease-in-out">
     <!-- Sidebar Top -->
     <div class="flex-1 overflow-y-auto py-6 px-4 space-y-6">
         <!-- Section Title: Admin Control Panel -->

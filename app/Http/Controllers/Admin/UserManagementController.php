@@ -18,6 +18,7 @@ class UserManagementController extends Controller
         $filter = $request->query('filter', 'pending'); // pending | approved | rejected | all
 
         $query = User::with('roles')
+            ->whereNotIn('email', ['admin@judgemate.test', 'judge@judgemate.test', 'contestant@judgemate.test'])
             ->whereDoesntHave('roles', fn ($q) => $q->where('name', 'Admin'))
             ->latest();
 
@@ -28,9 +29,15 @@ class UserManagementController extends Controller
         $users = $query->get();
 
         $counts = [
-            'pending'  => User::whereDoesntHave('roles', fn ($q) => $q->where('name', 'Admin'))->where('status', 'pending')->count(),
-            'approved' => User::whereDoesntHave('roles', fn ($q) => $q->where('name', 'Admin'))->where('status', 'approved')->count(),
-            'rejected' => User::whereDoesntHave('roles', fn ($q) => $q->where('name', 'Admin'))->where('status', 'rejected')->count(),
+            'pending'  => User::whereNotIn('email', ['admin@judgemate.test', 'judge@judgemate.test', 'contestant@judgemate.test'])
+                ->whereDoesntHave('roles', fn ($q) => $q->where('name', 'Admin'))
+                ->where('status', 'pending')->count(),
+            'approved' => User::whereNotIn('email', ['admin@judgemate.test', 'judge@judgemate.test', 'contestant@judgemate.test'])
+                ->whereDoesntHave('roles', fn ($q) => $q->where('name', 'Admin'))
+                ->where('status', 'approved')->count(),
+            'rejected' => User::whereNotIn('email', ['admin@judgemate.test', 'judge@judgemate.test', 'contestant@judgemate.test'])
+                ->whereDoesntHave('roles', fn ($q) => $q->where('name', 'Admin'))
+                ->where('status', 'rejected')->count(),
         ];
 
         return view('admin.users.index', compact('users', 'filter', 'counts'));

@@ -102,10 +102,10 @@
         </header>
 
         <!-- Layout Body -->
-        <div class="flex-1 flex overflow-hidden">
+        <div class="flex overflow-hidden" style="height: calc(100vh - 64px);">
             <!-- Sidebar Navigation -->
             @section('sidebar')
-            <aside id="sidebar-nav" class="fixed inset-y-0 left-0 z-30 w-64 transform -translate-x-full lg:translate-x-0 lg:static lg:inset-0 border-r border-slate-800/60 bg-slate-950 flex flex-col justify-between transition-transform duration-300 ease-in-out">
+            <aside id="sidebar-nav" class="fixed inset-y-0 left-0 z-30 w-64 transform -translate-x-full lg:translate-x-0 lg:relative lg:flex-shrink-0 flex flex-col justify-between border-r border-slate-800/60 bg-slate-950 overflow-y-auto transition-transform duration-300 ease-in-out">
                 <!-- Sidebar Top -->
                 <div class="flex-1 overflow-y-auto py-6 px-4 space-y-6">
                     <!-- Nav Section Title -->
@@ -193,17 +193,16 @@
             <div id="sidebar-overlay" class="fixed inset-0 z-20 bg-slate-950/60 backdrop-blur-sm hidden lg:hidden animate-fade-in"></div>
 
             <!-- Content Area -->
-            <main class="flex-1 overflow-y-auto px-4 py-8 sm:px-6 lg:px-8 bg-slate-950/40">
-                <div class="mx-auto max-w-7xl">
+            <main class="flex-1 overflow-y-auto bg-slate-950/40 flex flex-col justify-between">
+                <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 w-full">
                     @yield('content')
                 </div>
+                <!-- Footer -->
+                <footer class="border-t border-slate-800/60 bg-slate-950 px-4 py-6 sm:px-6 lg:px-8 text-center text-xs text-slate-500 w-full mt-auto">
+                    &copy; {{ date('Y') }} JudgeMate. All rights reserved. Laravel 12 & Spatie Powered.
+                </footer>
             </main>
         </div>
-
-        <!-- Footer -->
-        <footer class="border-t border-slate-800/60 bg-slate-950 px-4 py-6 sm:px-6 lg:px-8 text-center text-xs text-slate-500">
-            &copy; {{ date('Y') }} JudgeMate. All rights reserved. Laravel 12 & Spatie Powered.
-        </footer>
     </div>
 
     <!-- Toggle Script for Mobile Sidebar -->

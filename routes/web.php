@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Judge\JudgeController;
 use Illuminate\Support\Facades\Route;
 
 // Root → login page
@@ -34,6 +35,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'approved', 'role:Ad
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::post('/users/{user}/approve', [UserManagementController::class, 'approve'])->name('users.approve');
     Route::post('/users/{user}/reject', [UserManagementController::class, 'reject'])->name('users.reject');
+});
+
+// Judge / ProblemSetter routes — requires login + ProblemSetter role
+Route::prefix('judge')->name('judge.')->middleware(['auth', 'approved', 'role:ProblemSetter'])->group(function () {
+    Route::get('/', [JudgeController::class, 'dashboard'])->name('dashboard');
 });
 
 require __DIR__.'/auth.php';

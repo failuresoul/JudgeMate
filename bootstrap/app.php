@@ -14,7 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo('/login');
         $middleware->redirectUsersTo(function () {
             $user = auth()->user();
-            return $user?->hasRole('Admin') ? '/admin' : '/dashboard';
+            if ($user?->hasRole('Admin'))         return '/admin';
+            if ($user?->hasRole('ProblemSetter')) return '/judge';
+            return '/dashboard';
         });
 
         // Register the custom role-checking middleware under the alias 'role'
