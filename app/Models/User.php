@@ -33,6 +33,14 @@ class User extends Authenticatable
     public function isRejected(): bool { return $this->status === 'rejected'; }
 
     /**
+     * Get the problems created by the user.
+     */
+    public function problems(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Problem::class, 'created_by');
+    }
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var list<string>

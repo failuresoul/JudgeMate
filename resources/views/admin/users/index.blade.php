@@ -23,6 +23,11 @@
             {{ session('success') }}
         </div>
     @endif
+    @if(session('error'))
+        <div class="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            {{ session('error') }}
+        </div>
+    @endif
 
     {{-- Status Tabs --}}
     <div class="flex gap-1 rounded-xl border border-slate-800 bg-slate-900/50 p-1">
@@ -122,51 +127,57 @@
 
                             {{-- Actions --}}
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-2">
-                                    @if($user->status !== 'approved')
-                                        {{-- Approve --}}
-                                        <form method="POST" action="{{ route('admin.users.approve', $user) }}" class="inline">
-                                            @csrf
-                                            <button type="submit"
-                                                class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/20 hover:bg-emerald-500/20 transition-colors duration-150"
-                                                onclick="return confirm('Approve {{ addslashes($user->name) }}?')">
-                                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                                                Approve
-                                            </button>
-                                        </form>
-                                    @endif
+                                @if($user->id !== auth()->id() && !$user->hasRole('Admin'))
+                                    <div class="flex items-center justify-end gap-2">
+                                        @if($user->status !== 'approved')
+                                            {{-- Approve --}}
+                                            <form method="POST" action="{{ route('admin.users.approve', $user) }}" class="inline">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/20 hover:bg-emerald-500/20 transition-colors duration-150"
+                                                    onclick="return confirm('Approve {{ addslashes($user->name) }}?')">
+                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                                    Approve
+                                                </button>
+                                            </form>
+                                        @endif
 
+                                        @if($user->status !== 'rejected')
+                                            {{-- Reject (opens inline form) --}}
+                                            <button type="button"
+                                                onclick="document.getElementById('reject-form-{{ $user->id }}').classList.toggle('hidden')"
+                                                class="inline-flex items-center gap-1.5 rounded-lg bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-400 ring-1 ring-red-500/20 hover:bg-red-500/20 transition-colors duration-150">
+                                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                Reject
+                                            </button>
+                                        @endif
+                                    </div>
+
+                                    {{-- Inline reject reason form --}}
                                     @if($user->status !== 'rejected')
-                                        {{-- Reject (opens inline form) --}}
-                                        <button type="button"
-                                            onclick="document.getElementById('reject-form-{{ $user->id }}').classList.toggle('hidden')"
-                                            class="inline-flex items-center gap-1.5 rounded-lg bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-400 ring-1 ring-red-500/20 hover:bg-red-500/20 transition-colors duration-150">
-                                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                                            Reject
-                                        </button>
+                                    <div id="reject-form-{{ $user->id }}" class="hidden mt-2">
+                                        <form method="POST" action="{{ route('admin.users.reject', $user) }}">
+                                            @csrf
+                                            <div class="flex gap-2">
+                                                <input type="text" name="reason" placeholder="Reason (optional)"
+                                                    class="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs text-slate-200 placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500/50">
+                                                <button type="submit"
+                                                    class="rounded-lg bg-red-600 px-2 py-1 text-xs font-semibold text-white hover:bg-red-500 transition-colors">
+                                                    Confirm
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
                                     @endif
-                                </div>
 
-                                {{-- Inline reject reason form --}}
-                                @if($user->status !== 'rejected')
-                                <div id="reject-form-{{ $user->id }}" class="hidden mt-2">
-                                    <form method="POST" action="{{ route('admin.users.reject', $user) }}">
-                                        @csrf
-                                        <div class="flex gap-2">
-                                            <input type="text" name="reason" placeholder="Reason (optional)"
-                                                class="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs text-slate-200 placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500/50">
-                                            <button type="submit"
-                                                class="rounded-lg bg-red-600 px-2 py-1 text-xs font-semibold text-white hover:bg-red-500 transition-colors">
-                                                Confirm
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                                @endif
-
-                                {{-- Show rejection reason if rejected --}}
-                                @if($user->status === 'rejected' && $user->rejected_reason)
-                                    <p class="mt-1 text-xs text-red-400/70 italic text-right">"{{ $user->rejected_reason }}"</p>
+                                    {{-- Show rejection reason if rejected --}}
+                                    @if($user->status === 'rejected' && $user->rejected_reason)
+                                        <p class="mt-1 text-xs text-red-400/70 italic text-right">"{{ $user->rejected_reason }}"</p>
+                                    @endif
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 rounded-lg bg-slate-500/10 px-2.5 py-1 text-xs font-semibold text-slate-400 ring-1 ring-slate-500/20">
+                                        System Protected
+                                    </span>
                                 @endif
                             </td>
                         </tr>

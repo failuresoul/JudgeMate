@@ -53,6 +53,9 @@ class DatabaseSeeder extends Seeder
         );
         $setter->assignRole('ProblemSetter');
 
+        // 5. Seed sample problems and test cases
+        $this->call(ProblemSeeder::class);
+
         $this->command->info('✅  Database seeded successfully.');
     }
 }
