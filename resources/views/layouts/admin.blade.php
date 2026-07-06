@@ -20,7 +20,7 @@
 
                 <!-- Problems -->
                 <li>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors text-slate-400 hover:text-slate-200 hover:bg-slate-900/50">
+                    <a href="{{ route('problems.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors {{ Request::is('problems*') ? 'bg-indigo-600/10 text-indigo-400 border-l-2 border-indigo-500 pl-2.5' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50' }}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
@@ -55,6 +55,16 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                         Submissions
+                    </a>
+                </li>
+
+                <!-- Leaderboard -->
+                <li>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors text-slate-400 hover:text-slate-200 hover:bg-slate-900/50">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                        Leaderboard
                     </a>
                 </li>
             </ul>

@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Judge\JudgeController;
+use App\Http\Controllers\ProblemController;
 use Illuminate\Support\Facades\Route;
 
 // Root → login page
@@ -41,5 +42,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'approved', 'role:Ad
 Route::prefix('judge')->name('judge.')->middleware(['auth', 'approved', 'role:ProblemSetter'])->group(function () {
     Route::get('/', [JudgeController::class, 'dashboard'])->name('dashboard');
 });
+
+// Problems routes
+Route::resource('problems', ProblemController::class)
+    ->only(['create', 'store'])
+    ->middleware(['auth', 'approved', 'role:ProblemSetter']);
+
+Route::resource('problems', ProblemController::class)
+    ->only(['edit', 'update', 'destroy'])
+    ->middleware(['auth', 'approved', 'role:Admin,ProblemSetter']);
+
+Route::resource('problems', ProblemController::class)->only(['index', 'show']);
 
 require __DIR__.'/auth.php';

@@ -40,10 +40,10 @@
         </div>
 
         <!-- Problems Card -->
-        <div class="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-xl">
+        <a href="{{ route('problems.index') }}" class="block relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-xl hover:border-slate-700 hover:bg-slate-900/70 transition-all duration-200 group">
             <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-slate-400">Active Problems</span>
-                <div class="rounded-lg bg-violet-500/10 p-2 text-violet-400">
+                <span class="text-sm font-medium text-slate-400 group-hover:text-slate-200 transition-colors">Active Problems</span>
+                <div class="rounded-lg bg-violet-500/10 p-2 text-violet-400 group-hover:bg-violet-500/20 group-hover:text-violet-300 transition-all">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
@@ -53,7 +53,7 @@
                 <span class="text-3xl font-bold tracking-tight text-white">{{ $totalProblems }}</span>
             </div>
             <p class="mt-1 text-xs text-slate-500">Problems in the repository</p>
-        </div>
+        </a>
 
         <!-- Contests Card -->
         <div class="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-xl">

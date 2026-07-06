@@ -12,14 +12,15 @@ class JudgeController extends Controller
      */
     public function dashboard()
     {
-        // Summary stats — using DB counts (extend when models exist)
+        $myProblems = \App\Models\Problem::where('created_by', auth()->id())->latest()->take(5)->get();
+
         $stats = [
-            'problems_created'  => 0,   // TODO: Problem::where('created_by', auth()->id())->count()
-            'pending_review'    => 0,   // TODO: Submission::where('status','pending')->count()
-            'accepted_today'    => 0,   // TODO: Submission::whereDate('created_at', today())->where('verdict','AC')->count()
+            'problems_created'  => \App\Models\Problem::where('created_by', auth()->id())->where('is_published', true)->count(),
+            'pending_review'    => 0,
+            'accepted_today'    => 0,
             'total_contestants' => User::role('Contestant')->where('status','approved')->count(),
         ];
 
-        return view('judge.dashboard', compact('stats'));
+        return view('judge.dashboard', compact('stats', 'myProblems'));
     }
 }

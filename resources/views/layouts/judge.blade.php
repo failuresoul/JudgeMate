@@ -144,8 +144,11 @@
                     <p class="px-3 text-[10px] font-bold uppercase tracking-widest mb-3" style="color:#4c1d95;">Problem Management</p>
                     <ul class="space-y-1">
                         <li>
-                            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all duration-150">
-                                <svg class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <a href="{{ route('problems.create') }}"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                               {{ Request::routeIs('problems.create') ? 'text-violet-300' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60' }}"
+                               @if(Request::routeIs('problems.create')) style="background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.25);" @endif>
+                                <svg class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                                 </svg>
                                 Create Problem
@@ -153,8 +156,11 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all duration-150">
-                                <svg class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <a href="{{ route('problems.index') }}"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                               {{ Request::is('problems') || Request::routeIs('problems.show') || Request::routeIs('problems.edit') ? 'text-violet-300' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60' }}"
+                               @if(Request::is('problems') || Request::routeIs('problems.show') || Request::routeIs('problems.edit')) style="background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.25);" @endif>
+                                <svg class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                                 </svg>
                                 My Problems

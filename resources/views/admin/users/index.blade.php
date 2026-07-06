@@ -17,17 +17,7 @@
         </span>
     </div>
 
-    {{-- Flash Message --}}
-    @if(session('success'))
-        <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-400">
-            {{ session('success') }}
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
-            {{ session('error') }}
-        </div>
-    @endif
+
 
     {{-- Status Tabs --}}
     <div class="flex gap-1 rounded-xl border border-slate-800 bg-slate-900/50 p-1">

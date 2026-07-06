@@ -18,7 +18,7 @@
             <p class="text-sm text-slate-500 mt-1">Here's your judge panel overview for today.</p>
         </div>
         <div class="flex items-center gap-3 flex-shrink-0">
-            <a href="#"
+            <a href="{{ route('problems.create') }}"
                 class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg hover:shadow-violet-500/30"
                 style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -150,7 +150,7 @@
             style="background:rgba(10,8,30,0.7);border:1px solid rgba(124,58,237,0.18);">
             <h2 class="text-sm font-bold uppercase tracking-widest mb-5" style="color:#7c3aed;">Quick Actions</h2>
             <div class="space-y-3">
-                <a href="#"
+                <a href="{{ route('problems.create') }}"
                     class="group flex items-center gap-4 p-3.5 rounded-xl transition-all duration-150 hover:translate-x-1"
                     style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.15);">
                     <div class="flex h-10 w-10 items-center justify-center rounded-xl flex-shrink-0"
@@ -310,7 +310,7 @@
         <div class="rounded-2xl p-6" style="background:rgba(10,8,30,0.7);border:1px solid rgba(124,58,237,0.18);">
             <div class="flex items-center justify-between mb-5">
                 <h2 class="text-sm font-bold uppercase tracking-widest" style="color:#7c3aed;">My Problems</h2>
-                <a href="#"
+                <a href="{{ route('problems.create') }}"
                     class="inline-flex items-center gap-1.5 text-xs font-semibold transition-colors hover:opacity-80 px-3 py-1.5 rounded-lg"
                     style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.2);color:#a78bfa;">
                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -320,26 +320,56 @@
                 </a>
             </div>
 
-            {{-- Empty state --}}
-            <div class="flex flex-col items-center justify-center py-12 text-center">
-                <div class="flex h-14 w-14 items-center justify-center rounded-2xl mb-4"
-                    style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);">
-                    <svg class="h-7 w-7" style="color:#7c3aed;" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                        stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
+            @if($myProblems->isEmpty())
+                {{-- Empty state --}}
+                <div class="flex flex-col items-center justify-center py-12 text-center">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl mb-4"
+                        style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);">
+                        <svg class="h-7 w-7" style="color:#7c3aed;" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-300">No problems created yet</p>
+                    <p class="text-xs text-slate-600 mt-1 mb-4">Start building your problem set for contestants.</p>
+                    <a href="{{ route('problems.create') }}"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all duration-200 hover:opacity-90"
+                        style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Create your first problem
+                    </a>
                 </div>
-                <p class="text-sm font-semibold text-slate-300">No problems created yet</p>
-                <p class="text-xs text-slate-600 mt-1 mb-4">Start building your problem set for contestants.</p>
-                <a href="#"
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all duration-200 hover:opacity-90"
-                    style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Create your first problem
-                </a>
-            </div>
+            @else
+                {{-- Problems List --}}
+                <div class="divide-y divide-slate-800/60">
+                    @foreach($myProblems as $problem)
+                        <div class="flex items-center justify-between py-3">
+                            <div>
+                                <a href="{{ route('problems.show', $problem) }}" class="font-semibold text-slate-100 hover:text-indigo-400 text-sm transition-colors">
+                                    {{ $problem->title }}
+                                </a>
+                                <p class="text-xs text-slate-500 font-mono mt-0.5">{{ $problem->slug }}</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                @php
+                                    $difficultyColors = [
+                                        'easy'   => 'text-emerald-400 bg-emerald-500/10 ring-emerald-500/20',
+                                        'medium' => 'text-amber-400 bg-amber-500/10 ring-amber-500/20',
+                                        'hard'   => 'text-rose-400 bg-rose-500/10 ring-rose-500/20',
+                                    ];
+                                    $color = $difficultyColors[$problem->difficulty] ?? 'text-slate-400 bg-slate-500/10';
+                                @endphp
+                                <span class="inline-flex items-center rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ring-1 {{ $color }}">
+                                    {{ $problem->difficulty }}
+                                </span>
+                                <a href="{{ route('problems.edit', $problem) }}" class="text-xs font-semibold text-slate-400 hover:text-white transition-colors bg-slate-800 px-2.5 py-1.5 rounded-lg border border-slate-700">Edit</a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
         </div>
     </div>
 

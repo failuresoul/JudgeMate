@@ -19,8 +19,8 @@ class AdminController extends Controller
         $totalUsers = User::count();
         $pendingUsers = User::where('status', 'pending')->count();
 
-        // Mock counts for unimplemented features
-        $totalProblems = 24;
+        // Database counts
+        $totalProblems = \App\Models\Problem::where('is_published', true)->count();
         $totalContests = 5;
         $totalSubmissions = 142;
 

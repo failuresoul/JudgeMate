@@ -121,12 +121,12 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 transition-colors">
+                                <a href="{{ route('problems.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors {{ Request::is('problems*') ? 'bg-indigo-600/10 text-indigo-400 border-l-2 border-indigo-500 pl-2.5' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50' }}">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                                     </svg>
                                     Problems
-                                    <span class="ml-auto bg-slate-800 text-slate-400 text-xs px-2 py-0.5 rounded-full">120</span>
+                                    <span class="ml-auto bg-slate-800 text-slate-400 text-xs px-2 py-0.5 rounded-full">{{ \App\Models\Problem::count() }}</span>
                                 </a>
                             </li>
                             <li>
@@ -194,7 +194,19 @@
 
             <!-- Content Area -->
             <main class="flex-1 overflow-y-auto bg-slate-950/40 flex flex-col justify-between">
-                <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 w-full">
+                <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 w-full space-y-4">
+                    {{-- Global Session Alerts --}}
+                    @if(session('success'))
+                        <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-400">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
                     @yield('content')
                 </div>
                 <!-- Footer -->
