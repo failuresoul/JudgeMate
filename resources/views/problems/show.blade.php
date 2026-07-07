@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6 max-w-5xl mx-auto">
     {{-- Back and Edit Header --}}
-    <div class="flex items-center justify-between border-b border-slate-800 pb-5">
+    <div class="flex items-center justify-between">
         <a href="{{ route('problems.index') }}" 
            class="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3.5 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-150">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
@@ -127,7 +127,7 @@
                 <h2 class="text-lg font-bold text-white border-b border-slate-800 pb-2">Sample Test Cases</h2>
 
                 @php
-                    $visibleTestCases = $problem->testCases->where('is_hidden', false);
+                    $visibleTestCases = $problem->testCases->where('is_hidden', false)->values();
                 @endphp
 
                 @if($visibleTestCases->isEmpty())
@@ -152,6 +152,36 @@
                     </div>
                 @endif
             </div>
+
+            @hasrole('Admin')
+                @php
+                    $hiddenTestCases = $problem->testCases->where('is_hidden', true)->values();
+                @endphp
+                @if(!$hiddenTestCases->isEmpty())
+                    <div class="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-6 space-y-4">
+                        <div class="flex items-center justify-between border-b border-amber-500/10 pb-2">
+                            <h2 class="text-lg font-bold text-amber-400">Hidden Test Cases (Admin Only)</h2>
+                        </div>
+                        <div class="space-y-4">
+                            @foreach($hiddenTestCases as $index => $tc)
+                                <div class="space-y-2">
+                                    <span class="text-xs font-semibold text-amber-500 uppercase tracking-wider">Hidden Case #{{ $index + 1 }}</span>
+                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                        <div class="space-y-1">
+                                            <span class="text-slate-500 uppercase tracking-wider font-semibold text-[10px]">Input</span>
+                                            <pre class="bg-slate-950/70 border border-slate-900 p-2 rounded-lg text-slate-200 overflow-x-auto select-all max-h-24 font-mono">{{ $tc->input }}</pre>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <span class="text-slate-500 uppercase tracking-wider font-semibold text-[10px]">Expected Output</span>
+                                            <pre class="bg-slate-950/70 border border-slate-900 p-2 rounded-lg text-slate-200 overflow-x-auto select-all max-h-24 font-mono">{{ $tc->expected_output }}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            @endhasrole
         </div>
 
     </div>

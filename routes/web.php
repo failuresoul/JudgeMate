@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Judge\JudgeController;
 use App\Http\Controllers\ProblemController;
+use App\Http\Controllers\TestCaseController;
 use Illuminate\Support\Facades\Route;
 
 // Root → login page
@@ -41,6 +42,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'approved', 'role:Ad
 // Judge / ProblemSetter routes — requires login + ProblemSetter role
 Route::prefix('judge')->name('judge.')->middleware(['auth', 'approved', 'role:ProblemSetter'])->group(function () {
     Route::get('/', [JudgeController::class, 'dashboard'])->name('dashboard');
+    Route::get('/test-cases', [TestCaseController::class, 'index'])->name('test-cases.index');
+    Route::get('/problems/{problem}/test-cases', [TestCaseController::class, 'show'])->name('test-cases.show');
 });
 
 // Problems routes
@@ -53,5 +56,14 @@ Route::resource('problems', ProblemController::class)
     ->middleware(['auth', 'approved', 'role:Admin,ProblemSetter']);
 
 Route::resource('problems', ProblemController::class)->only(['index', 'show']);
+
+// Test Cases routes
+Route::post('problems/{problem}/test-cases', [TestCaseController::class, 'store'])
+    ->name('problems.test-cases.store')
+    ->middleware(['auth', 'approved', 'role:ProblemSetter']);
+
+Route::delete('test-cases/{test_case}', [TestCaseController::class, 'destroy'])
+    ->name('test-cases.destroy')
+    ->middleware(['auth', 'approved', 'role:ProblemSetter']);
 
 require __DIR__.'/auth.php';

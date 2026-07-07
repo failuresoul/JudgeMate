@@ -45,17 +45,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
                     </svg>
                 </button>
-                <a href="{{ route('judge.dashboard') }}" class="flex items-center gap-2.5 group">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-xl shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform duration-200"
-                         style="background: linear-gradient(135deg, #7c3aed, #4f46e5);">
-                        <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                <a href="{{ route('judge.dashboard') }}" class="flex items-center gap-2 group">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
+                        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />
                         </svg>
                     </div>
-                    <div>
-                        <span class="text-lg font-bold tracking-tight text-white">Judge<span style="color:#a78bfa">Mate</span></span>
-                        <span class="hidden sm:block text-[10px] font-semibold uppercase tracking-widest" style="color:#7c3aed;">Judge Panel</span>
-                    </div>
+                    <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-400 bg-clip-text text-transparent">Judge<span class="text-indigo-500">Mate</span></span>
                 </a>
             </div>
 
@@ -167,7 +163,10 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all duration-150">
+                            <a href="{{ route('judge.test-cases.index') }}" 
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                               {{ Request::routeIs('judge.test-cases.index') ? 'text-violet-300' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60' }}"
+                               @if(Request::routeIs('judge.test-cases.index')) style="background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.25);" @endif>
                                 <svg class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
