@@ -251,15 +251,6 @@
 
                 {{-- Visual bars --}}
                 <div class="flex-grow flex flex-col justify-between my-2 min-h-[260px]">
-                    @php
-                        $verdicts = [
-                            ['label' => 'Accepted', 'short' => 'AC', 'val' => 0, 'color' => '#10b981', 'bg' => 'rgba(16,185,129,0.15)', 'pct' => 0],
-                            ['label' => 'Wrong Answer', 'short' => 'WA', 'val' => 0, 'color' => '#ef4444', 'bg' => 'rgba(239,68,68,0.12)', 'pct' => 0],
-                            ['label' => 'Time Limit', 'short' => 'TLE', 'val' => 0, 'color' => '#f59e0b', 'bg' => 'rgba(245,158,11,0.12)', 'pct' => 0],
-                            ['label' => 'Runtime Error', 'short' => 'RTE', 'val' => 0, 'color' => '#f97316', 'bg' => 'rgba(249,115,22,0.12)', 'pct' => 0],
-                            ['label' => 'Compile Error', 'short' => 'CE', 'val' => 0, 'color' => '#8b5cf6', 'bg' => 'rgba(139,92,246,0.12)', 'pct' => 0],
-                        ];
-                    @endphp
                     @foreach($verdicts as $v)
                         <div class="flex flex-col justify-center">
                             <div class="flex items-center justify-between mb-1">
@@ -288,22 +279,64 @@
         <div class="rounded-2xl p-6" style="background:rgba(10,8,30,0.7);border:1px solid rgba(124,58,237,0.18);">
             <div class="flex items-center justify-between mb-5">
                 <h2 class="text-sm font-bold uppercase tracking-widest" style="color:#7c3aed;">Recent Submissions</h2>
-                <a href="#" class="text-xs font-semibold transition-colors hover:opacity-80" style="color:#a78bfa;">View all
-                    →</a>
+                <a href="{{ route('submissions.index') }}" class="text-xs font-semibold transition-colors hover:opacity-80" style="color:#a78bfa;">View all →</a>
             </div>
-            <div class="flex flex-col items-center justify-center py-12 text-center">
-                <div class="flex h-14 w-14 items-center justify-center rounded-2xl mb-4"
-                    style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);">
-                    <svg class="h-7 w-7" style="color:#7c3aed;" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                        stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
+            @if($submissions->isEmpty())
+                <div class="flex flex-col items-center justify-center py-12 text-center">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl mb-4"
+                        style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);">
+                        <svg class="h-7 w-7" style="color:#7c3aed;" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-300">No submissions yet</p>
+                    <p class="text-xs text-slate-600 mt-1 font-medium">Submissions will appear here once contestants start solving your problems.</p>
                 </div>
-                <p class="text-sm font-semibold text-slate-300">No submissions yet</p>
-                <p class="text-xs text-slate-600 mt-1">Submissions will appear here once contestants start solving problems.
-                </p>
-            </div>
+            @else
+                <div class="divide-y divide-slate-800/60">
+                    @foreach($submissions as $submission)
+                        <div class="flex items-center justify-between py-3">
+                            <div>
+                                <a href="{{ route('problems.show', $submission->problem) }}" class="font-semibold text-slate-100 hover:text-indigo-400 text-sm transition-colors">
+                                    {{ $submission->problem->title }}
+                                </a>
+                                <p class="text-xs text-slate-500 font-mono mt-0.5">
+                                    by {{ $submission->user->name }} &bull; {{ $submission->submitted_at->diffForHumans() }}
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-[10px] uppercase bg-slate-800 px-2 py-0.5 rounded text-slate-300">
+                                    {{ $submission->language }}
+                                </span>
+                                @php
+                                    $badgeClasses = [
+                                        'pending'               => 'bg-amber-500/10 text-amber-400 ring-amber-500/20',
+                                        'accepted'              => 'bg-emerald-500/10 text-emerald-400 ring-emerald-500/20',
+                                        'wrong_answer'          => 'bg-rose-500/10 text-rose-400 ring-rose-500/20',
+                                        'compilation_error'     => 'bg-rose-500/10 text-rose-400 ring-rose-500/20',
+                                        'time_limit_exceeded'   => 'bg-rose-500/10 text-rose-400 ring-rose-500/20',
+                                    ];
+                                    $class = $badgeClasses[$submission->status] ?? 'bg-slate-500/10 text-slate-400 ring-slate-500/20';
+
+                                    $statusLabels = [
+                                        'pending'               => 'Pending',
+                                        'accepted'              => 'Accepted',
+                                        'wrong_answer'          => 'Wrong Answer',
+                                        'compilation_error'     => 'Compilation Error',
+                                        'time_limit_exceeded'   => 'Time Limit Exceeded',
+                                    ];
+                                    $label = $statusLabels[$submission->status] ?? ucfirst(str_replace('_', ' ', $submission->status));
+                                @endphp
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold ring-1 ring-inset {{ $class }}">
+                                    {{ $label }}
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
         </div>
 
         {{-- My Problems --}}

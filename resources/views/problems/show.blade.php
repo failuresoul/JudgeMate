@@ -12,6 +12,7 @@
             Back to Problems
         </a>
         <div class="flex items-center gap-2">
+            @if(!auth()->user()->hasRole('Admin'))
             <a href="{{ route('problems.submit', $problem) }}" 
                class="inline-flex items-center gap-1.5 rounded-lg py-2 px-4 text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg hover:shadow-emerald-500/30 active:scale-[.98]"
                style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
@@ -20,13 +21,14 @@
                 </svg>
                 Submit Solution
             </a>
-            @hasanyrole('Admin|ProblemSetter')
+            @endif
+            @role('ProblemSetter')
             <a href="{{ route('problems.edit', $problem) }}" 
                class="inline-flex items-center gap-1.5 rounded-lg py-2 px-4 text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg hover:shadow-indigo-500/30 active:scale-[.98]"
                style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
                 Edit Problem
             </a>
-            @endhasanyrole
+            @endrole
         </div>
     </div>
 

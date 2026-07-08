@@ -16,10 +16,28 @@ class SubmissionController extends Controller
      */
     public function index(): View
     {
-        $submissions = auth()->user()->submissions()
-            ->with('problem')
+        $user = auth()->user();
+
+        if ($user->hasRole('Admin')) {
+            // Admin sees all submissions
+            $submissions = Submission::with(['problem', 'user'])
+                ->latest()
+                ->paginate(15);
+        } elseif ($user->hasRole('ProblemSetter')) {
+            // Judge sees submissions of the problems they created
+            $submissions = Submission::whereHas('problem', function ($query) use ($user) {
+                $query->where('created_by', $user->id);
+            })
+            ->with(['problem', 'user'])
             ->latest()
             ->paginate(15);
+        } else {
+            // Contestant sees only their own submissions
+            $submissions = $user->submissions()
+                ->with('problem')
+                ->latest()
+                ->paginate(15);
+        }
 
         return view('submissions.index', compact('submissions'));
     }
@@ -63,7 +81,13 @@ class SubmissionController extends Controller
      */
     public function status(Submission $submission)
     {
-        if ($submission->user_id !== auth()->id()) {
+        $user = auth()->user();
+
+        $isOwner = $submission->user_id === $user->id;
+        $isAdmin = $user->hasRole('Admin');
+        $isProblemOwner = $user->hasRole('ProblemSetter') && $submission->problem->created_by === $user->id;
+
+        if (!$isOwner && !$isAdmin && !$isProblemOwner) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 

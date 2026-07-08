@@ -7,8 +7,24 @@
     {{-- Header --}}
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-3xl font-extrabold text-white tracking-tight">My Submissions</h1>
-            <p class="text-sm text-slate-400 mt-1">Track and monitor status of your solution evaluations in real-time.</p>
+            <h1 class="text-3xl font-extrabold text-white tracking-tight">
+                @if(auth()->user()->hasRole('Admin'))
+                    All Submissions
+                @elseif(auth()->user()->hasRole('ProblemSetter'))
+                    Problem Submissions
+                @else
+                    My Submissions
+                @endif
+            </h1>
+            <p class="text-sm text-slate-400 mt-1">
+                @if(auth()->user()->hasRole('Admin'))
+                    Monitor all contestant code submissions across the platform.
+                @elseif(auth()->user()->hasRole('ProblemSetter'))
+                    Monitor contestant submissions for the problems you created.
+                @else
+                    Track and monitor status of your solution evaluations in real-time.
+                @endif
+            </p>
         </div>
     </div>
 
@@ -18,6 +34,9 @@
             <table class="w-full divide-y divide-slate-800 text-left text-sm text-slate-300">
                 <thead class="bg-slate-900/50 text-xs font-bold uppercase tracking-wider text-slate-400">
                     <tr>
+                        @if(auth()->user()->hasRole('Admin') || auth()->user()->hasRole('ProblemSetter'))
+                            <th scope="col" class="px-6 py-4 whitespace-nowrap">Contestant</th>
+                        @endif
                         <th scope="col" class="px-6 py-4">Problem</th>
                         <th scope="col" class="px-6 py-4 whitespace-nowrap">Language</th>
                         <th scope="col" class="px-6 py-4 whitespace-nowrap">Status</th>
@@ -28,6 +47,12 @@
                 <tbody class="divide-y divide-slate-800/60 bg-slate-950/20">
                     @forelse($submissions as $submission)
                         <tr class="hover:bg-slate-900/20 transition-colors">
+                            @if(auth()->user()->hasRole('Admin') || auth()->user()->hasRole('ProblemSetter'))
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-200">
+                                    {{ $submission->user->name ?? 'Unknown' }}
+                                    <div class="text-[10px] text-slate-500 font-mono">{{ $submission->user->email ?? '' }}</div>
+                                </td>
+                            @endif
                             <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-200">
                                 <a href="{{ route('problems.show', $submission->problem) }}" class="hover:text-indigo-400 transition-colors text-base font-semibold">
                                     {{ $submission->problem->title }}
@@ -73,7 +98,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-10 text-center text-slate-500">
+                            <td colspan="{{ (auth()->user()->hasRole('Admin') || auth()->user()->hasRole('ProblemSetter')) ? 6 : 5 }}" class="px-6 py-10 text-center text-slate-500">
                                 <svg class="mx-auto h-12 w-12 text-slate-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                 </svg>

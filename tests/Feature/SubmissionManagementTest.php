@@ -195,6 +195,47 @@ class SubmissionManagementTest extends TestCase
         $response->assertSee($problem->title);
         $this->assertCount(1, $response->viewData('submissions'));
         $this->assertEquals($subA->id, $response->viewData('submissions')->first()->id);
+
+        // Admin sees all submissions (User A + User B)
+        $admin = User::factory()->create(['status' => 'approved']);
+        $admin->assignRole('Admin');
+
+        $responseAdmin = $this->actingAs($admin)->get(route('submissions.index'));
+        $responseAdmin->assertStatus(200);
+        $this->assertCount(2, $responseAdmin->viewData('submissions'));
+
+        // Judge sees only submissions for their own problems
+        $judge1 = User::factory()->create(['status' => 'approved']);
+        $judge1->assignRole('ProblemSetter');
+
+        $judge2 = User::factory()->create(['status' => 'approved']);
+        $judge2->assignRole('ProblemSetter');
+
+        $problem1 = Problem::factory()->create(['created_by' => $judge1->id]);
+        $problem2 = Problem::factory()->create(['created_by' => $judge2->id]);
+
+        $subJ1 = \App\Models\Submission::create([
+            'user_id'      => $userA->id,
+            'problem_id'   => $problem1->id,
+            'code'         => 'print("J1")',
+            'language'     => 'python',
+            'status'       => 'accepted',
+            'submitted_at' => now(),
+        ]);
+
+        $subJ2 = \App\Models\Submission::create([
+            'user_id'      => $userB->id,
+            'problem_id'   => $problem2->id,
+            'code'         => 'print("J2")',
+            'language'     => 'python',
+            'status'       => 'accepted',
+            'submitted_at' => now(),
+        ]);
+
+        $responseJ1 = $this->actingAs($judge1)->get(route('submissions.index'));
+        $responseJ1->assertStatus(200);
+        $this->assertCount(1, $responseJ1->viewData('submissions'));
+        $this->assertEquals($subJ1->id, $responseJ1->viewData('submissions')->first()->id);
     }
 
     /**
@@ -204,7 +245,11 @@ class SubmissionManagementTest extends TestCase
     {
         $userA = User::factory()->create(['status' => 'approved']);
         $userB = User::factory()->create(['status' => 'approved']);
-        $problem = Problem::factory()->create(['created_by' => User::factory()->create()->id]);
+        
+        $judge = User::factory()->create(['status' => 'approved']);
+        $judge->assignRole('ProblemSetter');
+        
+        $problem = Problem::factory()->create(['created_by' => $judge->id]);
 
         $subA = \App\Models\Submission::create([
             'user_id'      => $userA->id,
@@ -225,6 +270,27 @@ class SubmissionManagementTest extends TestCase
 
         // User B cannot access User A's submission status
         $this->actingAs($userB)
+            ->getJson(route('submissions.status', $subA))
+            ->assertStatus(403);
+
+        // Admin can access any submission status
+        $admin = User::factory()->create(['status' => 'approved']);
+        $admin->assignRole('Admin');
+
+        $this->actingAs($admin)
+            ->getJson(route('submissions.status', $subA))
+            ->assertStatus(200);
+
+        // Judge who created the problem can access the submission status
+        $this->actingAs($judge)
+            ->getJson(route('submissions.status', $subA))
+            ->assertStatus(200);
+
+        // Another Judge cannot access the submission status
+        $otherJudge = User::factory()->create(['status' => 'approved']);
+        $otherJudge->assignRole('ProblemSetter');
+
+        $this->actingAs($otherJudge)
             ->getJson(route('submissions.status', $subA))
             ->assertStatus(403);
     }

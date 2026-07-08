@@ -19,10 +19,10 @@ class AdminController extends Controller
         $totalUsers = User::count();
         $pendingUsers = User::where('status', 'pending')->count();
 
-        // Database counts
+                // Database counts
         $totalProblems = \App\Models\Problem::where('is_published', true)->count();
         $totalContests = 5;
-        $totalSubmissions = 142;
+        $totalSubmissions = \App\Models\Submission::count();
 
         return view('admin.dashboard', compact(
             'totalUsers',

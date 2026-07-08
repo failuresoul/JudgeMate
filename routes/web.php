@@ -53,7 +53,7 @@ Route::resource('problems', ProblemController::class)
 
 Route::resource('problems', ProblemController::class)
     ->only(['edit', 'update', 'destroy'])
-    ->middleware(['auth', 'approved', 'role:Admin,ProblemSetter']);
+    ->middleware(['auth', 'approved', 'role:ProblemSetter']);
 
 Route::resource('problems', ProblemController::class)->only(['index', 'show']);
 

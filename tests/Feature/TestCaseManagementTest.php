@@ -148,4 +148,33 @@ class TestCaseManagementTest extends TestCase
         $response = $this->actingAs($judge)->get(route('judge.test-cases.show', $problem));
         $response->assertStatus(403);
     }
+
+    /**
+     * Test that an Admin is blocked from editing or deleting problems.
+     */
+    public function test_admin_cannot_edit_or_delete_problems(): void
+    {
+        $admin = User::factory()->create(['status' => 'approved']);
+        $admin->assignRole('Admin');
+
+        $problem = Problem::factory()->create([
+            'created_by' => User::factory()->create()->id
+        ]);
+
+        // Edit route block
+        $this->actingAs($admin)
+            ->get(route('problems.edit', $problem))
+            ->assertRedirect(route('dashboard'));
+
+        // Update route block
+        $this->actingAs($admin)
+            ->put(route('problems.update', $problem), [
+                'title' => 'Updated title'
+            ])->assertRedirect(route('dashboard'));
+
+        // Destroy route block
+        $this->actingAs($admin)
+            ->delete(route('problems.destroy', $problem))
+            ->assertRedirect(route('dashboard'));
+    }
 }

@@ -50,7 +50,7 @@
 
                 <!-- Submissions -->
                 <li>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors text-slate-400 hover:text-slate-200 hover:bg-slate-900/50">
+                    <a href="{{ route('submissions.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors {{ Request::routeIs('submissions.*') ? 'bg-indigo-600/10 text-indigo-400 border-l-2 border-indigo-500 pl-2.5' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50' }}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>

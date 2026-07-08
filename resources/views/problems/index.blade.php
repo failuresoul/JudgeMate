@@ -41,9 +41,9 @@
                             <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Difficulty</th>
                             <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Creator</th>
                             <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
-                            @hasanyrole('Admin|ProblemSetter')
+                            @role('ProblemSetter')
                             <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 text-right">Actions</th>
-                            @endhasanyrole
+                            @endrole
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-800/60">
@@ -96,7 +96,7 @@
                             </td>
 
                             {{-- Actions --}}
-                            @hasanyrole('Admin|ProblemSetter')
+                            @role('ProblemSetter')
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <a href="{{ route('problems.edit', $problem) }}" 
@@ -114,7 +114,7 @@
                                     </form>
                                 </div>
                             </td>
-                            @endhasanyrole
+                            @endrole
                         </tr>
                         @endforeach
                     </tbody>
