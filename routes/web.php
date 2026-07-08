@@ -70,8 +70,10 @@ Route::delete('test-cases/{test_case}', [TestCaseController::class, 'destroy'])
 
 // Submissions routes
 Route::middleware(['auth', 'approved'])->group(function () {
+    Route::get('submissions', [SubmissionController::class, 'index'])->name('submissions.index');
     Route::get('problems/{problem}/submit', [SubmissionController::class, 'create'])->name('problems.submit');
     Route::post('problems/{problem}/submissions', [SubmissionController::class, 'store'])->name('problems.submissions.store');
+    Route::get('submissions/{submission}/status', [SubmissionController::class, 'status'])->name('submissions.status');
 });
 
 require __DIR__.'/auth.php';

@@ -12,6 +12,19 @@ use Illuminate\View\View;
 class SubmissionController extends Controller
 {
     /**
+     * Display a listing of the user's submissions.
+     */
+    public function index(): View
+    {
+        $submissions = auth()->user()->submissions()
+            ->with('problem')
+            ->latest()
+            ->paginate(15);
+
+        return view('submissions.index', compact('submissions'));
+    }
+
+    /**
      * Show the code submission form for the specified problem.
      */
     public function create(Problem $problem): View
@@ -43,5 +56,20 @@ class SubmissionController extends Controller
 
         return redirect()->route('problems.show', $problem)
             ->with('success', 'Your code has been submitted successfully and is currently pending evaluation.');
+    }
+
+    /**
+     * Get the status of a specific submission (JSON endpoint for polling).
+     */
+    public function status(Submission $submission)
+    {
+        if ($submission->user_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        return response()->json([
+            'status'          => $submission->status,
+            'verdict_message' => $submission->verdict_message,
+        ]);
     }
 }
