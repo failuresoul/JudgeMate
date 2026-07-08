@@ -65,4 +65,12 @@ class Problem extends Model
     {
         return $this->belongsToMany(Tag::class);
     }
+
+    /**
+     * Get the submissions for the problem.
+     */
+    public function submissions(): HasMany
+    {
+        return $this->hasMany(Submission::class);
+    }
 }

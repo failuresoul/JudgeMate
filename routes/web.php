@@ -57,6 +57,8 @@ Route::resource('problems', ProblemController::class)
 
 Route::resource('problems', ProblemController::class)->only(['index', 'show']);
 
+use App\Http\Controllers\SubmissionController;
+
 // Test Cases routes
 Route::post('problems/{problem}/test-cases', [TestCaseController::class, 'store'])
     ->name('problems.test-cases.store')
@@ -65,5 +67,11 @@ Route::post('problems/{problem}/test-cases', [TestCaseController::class, 'store'
 Route::delete('test-cases/{test_case}', [TestCaseController::class, 'destroy'])
     ->name('test-cases.destroy')
     ->middleware(['auth', 'approved', 'role:ProblemSetter']);
+
+// Submissions routes
+Route::middleware(['auth', 'approved'])->group(function () {
+    Route::get('problems/{problem}/submit', [SubmissionController::class, 'create'])->name('problems.submit');
+    Route::post('problems/{problem}/submissions', [SubmissionController::class, 'store'])->name('problems.submissions.store');
+});
 
 require __DIR__.'/auth.php';

@@ -41,6 +41,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the submissions made by the user.
+     */
+    public function submissions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Submission::class);
+    }
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var list<string>
