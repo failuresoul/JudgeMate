@@ -47,6 +47,17 @@ class SubmissionController extends Controller
      */
     public function create(Problem $problem): View
     {
+        $now = now();
+        $contests = $problem->contests;
+        if ($contests->isNotEmpty()) {
+            $hasStartedContest = $contests->contains(function ($contest) use ($now) {
+                return $now->gte($contest->starts_at);
+            });
+            if (!$hasStartedContest && !auth()->user()->hasRole('Admin') && auth()->id() !== $problem->created_by) {
+                abort(403, 'This problem is part of an upcoming contest and cannot be solved yet.');
+            }
+        }
+
         return view('problems.submit', compact('problem'));
     }
 
@@ -56,13 +67,51 @@ class SubmissionController extends Controller
     public function store(Request $request, Problem $problem): RedirectResponse
     {
         $validated = $request->validate([
-            'language' => ['required', 'string', 'in:cpp,python,java'],
-            'code'     => ['required', 'string'],
+            'language'   => ['required', 'string', 'in:cpp,python,java'],
+            'code'       => ['required', 'string'],
+            'contest_id' => ['nullable', 'exists:contests,id'],
         ]);
+
+        $contestId = $validated['contest_id'] ?? null;
+
+        // Auto-detect active contest if not explicitly passed
+        if (!$contestId) {
+            $now = now();
+            // Find an active approved contest containing this problem that the user is participating in
+            $activeContest = \App\Models\Contest::where('starts_at', '<=', $now)
+                ->where('ends_at', '>=', $now)
+                ->where('is_approved', true)
+                ->whereHas('problems', function ($query) use ($problem) {
+                    $query->where('problems.id', $problem->id);
+                })
+                ->whereHas('participants', function ($query) {
+                    $query->where('users.id', auth()->id());
+                })
+                ->first();
+
+            if ($activeContest) {
+                $contestId = $activeContest->id;
+            }
+        } else {
+            // Explicitly passed contest_id validation
+            $contest = \App\Models\Contest::findOrFail($contestId);
+
+            // Verify problem is in the contest
+            if (!$contest->problems()->where('problems.id', $problem->id)->exists()) {
+                return back()->withErrors(['contest_id' => 'This problem is not part of the specified contest.']);
+            }
+
+            // Verify the contest window is currently active (falls between starts_at and ends_at)
+            $now = now();
+            if ($now->lt($contest->starts_at) || $now->gt($contest->ends_at)) {
+                return back()->withErrors(['contest_id' => 'The contest is either closed or has not started yet. Submission rejected.']);
+            }
+        }
 
         $submission = Submission::create([
             'user_id'      => auth()->id(),
             'problem_id'   => $problem->id,
+            'contest_id'   => $contestId,
             'code'         => $validated['code'],
             'language'     => $validated['language'],
             'status'       => 'pending',
@@ -71,6 +120,11 @@ class SubmissionController extends Controller
 
         // Dispatch the job carrying the new submission
         JudgeSubmission::dispatch($submission);
+
+        if ($contestId) {
+            return redirect()->route('contests.show', $contestId)
+                ->with('success', 'Your code has been submitted successfully for the contest and is pending evaluation.');
+        }
 
         return redirect()->route('problems.show', $problem)
             ->with('success', 'Your code has been submitted successfully and is currently pending evaluation.');

@@ -73,4 +73,13 @@ class Problem extends Model
     {
         return $this->hasMany(Submission::class);
     }
+
+    /**
+     * Get the contests associated with the problem.
+     */
+    public function contests(): BelongsToMany
+    {
+        return $this->belongsToMany(Contest::class, 'contest_problems')
+            ->withPivot('label');
+    }
 }

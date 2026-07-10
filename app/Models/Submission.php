@@ -18,6 +18,7 @@ class Submission extends Model
     protected $fillable = [
         'user_id',
         'problem_id',
+        'contest_id',
         'code',
         'language',
         'status',
@@ -51,5 +52,13 @@ class Submission extends Model
     public function problem(): BelongsTo
     {
         return $this->belongsTo(Problem::class);
+    }
+
+    /**
+     * Get the contest that owns the submission.
+     */
+    public function contest(): BelongsTo
+    {
+        return $this->belongsTo(Contest::class);
     }
 }

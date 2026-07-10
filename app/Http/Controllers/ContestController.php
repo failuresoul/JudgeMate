@@ -217,6 +217,31 @@ class ContestController extends Controller implements HasMiddleware
     }
 
     /**
+     * Join an active contest (Contestant only, restricted to active window).
+     */
+    public function join(Request $request, Contest $contest): RedirectResponse
+    {
+        if (!$contest->is_approved) {
+            abort(403, 'This contest is not approved yet.');
+        }
+
+        $now = now();
+        if ($now->lt($contest->starts_at) || $now->gt($contest->ends_at)) {
+            return back()->with('error', 'You can only join active contests.');
+        }
+
+        // Attach participant if not already registered
+        if (!$contest->participants()->where('user_id', auth()->id())->exists()) {
+            $contest->participants()->attach(auth()->id(), [
+                'joined_at' => $now,
+            ]);
+        }
+
+        return redirect()->route('contests.show', $contest)
+            ->with('success', 'You have successfully joined ' . $contest->title);
+    }
+
+    /**
      * Convert numeric index into alphabetical label sequence (A, B, C... Z, AA, AB...).
      */
     private function getLabelForIndex(int $index): string

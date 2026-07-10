@@ -6,14 +6,22 @@
 <div class="space-y-6 max-w-5xl mx-auto">
     {{-- Back and Edit Header --}}
     <div class="flex items-center justify-between">
+        @if(request('contest_id'))
+        <a href="{{ route('contests.show', request('contest_id')) }}" 
+           class="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3.5 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-150">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+            Back to Contest
+        </a>
+        @else
         <a href="{{ route('problems.index') }}" 
            class="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3.5 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-150">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
             Back to Problems
         </a>
+        @endif
         <div class="flex items-center gap-2">
             @if(!auth()->user()->hasRole('Admin'))
-            <a href="{{ route('problems.submit', $problem) }}" 
+            <a href="{{ route('problems.submit', [$problem, 'contest_id' => request('contest_id')]) }}" 
                class="inline-flex items-center gap-1.5 rounded-lg py-2 px-4 text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg hover:shadow-emerald-500/30 active:scale-[.98]"
                style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

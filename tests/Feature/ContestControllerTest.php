@@ -250,4 +250,180 @@ class ContestControllerTest extends TestCase
         $response->assertSee('Enter');
         $response->assertDontSee('Register');
     }
+
+    /**
+     * Test contestant can join active contest but not inactive.
+     */
+    public function test_contestant_join_active_and_inactive_contests(): void
+    {
+        $judge = User::factory()->create(['status' => 'approved']);
+        $judge->assignRole('ProblemSetter');
+
+        // Active contest
+        $activeContest = Contest::create([
+            'title' => 'Active Contest',
+            'starts_at' => now()->subHour(),
+            'ends_at' => now()->addHour(),
+            'is_active' => true,
+            'is_approved' => true,
+            'created_by' => $judge->id,
+        ]);
+
+        // Inactive (upcoming) contest
+        $inactiveContest = Contest::create([
+            'title' => 'Upcoming Contest',
+            'starts_at' => now()->addDay(),
+            'ends_at' => now()->addDay()->addHours(2),
+            'is_active' => true,
+            'is_approved' => true,
+            'created_by' => $judge->id,
+        ]);
+
+        $contestant = User::factory()->create(['status' => 'approved']);
+        $contestant->assignRole('Contestant');
+
+        // Join active contest -> should succeed
+        $response = $this->actingAs($contestant)->post(route('contests.join', $activeContest));
+        $response->assertRedirect(route('contests.show', $activeContest));
+        $this->assertTrue($activeContest->participants->contains($contestant->id));
+
+        // Join inactive contest -> should fail and redirect back with error
+        $response = $this->actingAs($contestant)->post(route('contests.join', $inactiveContest));
+        $response->assertStatus(302);
+        $response->assertSessionHas('error', 'You can only join active contests.');
+        $this->assertFalse($inactiveContest->participants->contains($contestant->id));
+    }
+
+    /**
+     * Test submissions link to active contests and reject closed/invalid windows.
+     */
+    public function test_submissions_linking_and_validation_with_contests(): void
+    {
+        $judge = User::factory()->create(['status' => 'approved']);
+        $judge->assignRole('ProblemSetter');
+
+        $problem = Problem::create([
+            'title' => 'Contest Problem',
+            'slug' => 'contest-problem',
+            'statement' => 'Solve this.',
+            'difficulty' => 'easy',
+            'is_published' => true,
+            'created_by' => $judge->id,
+        ]);
+
+        // Active contest
+        $activeContest = Contest::create([
+            'title' => 'Active Contest',
+            'starts_at' => now()->subHour(),
+            'ends_at' => now()->addHour(),
+            'is_active' => true,
+            'is_approved' => true,
+            'created_by' => $judge->id,
+        ]);
+        $activeContest->problems()->attach($problem->id, ['label' => 'A']);
+
+        // Inactive/Closed contest
+        $closedContest = Contest::create([
+            'title' => 'Closed Contest',
+            'starts_at' => now()->subHours(5),
+            'ends_at' => now()->subHours(3),
+            'is_active' => true,
+            'is_approved' => true,
+            'created_by' => $judge->id,
+        ]);
+        $closedContest->problems()->attach($problem->id, ['label' => 'B']);
+
+        $contestant = User::factory()->create(['status' => 'approved']);
+        $contestant->assignRole('Contestant');
+
+        // Register contestant to both contests
+        $activeContest->participants()->attach($contestant->id, ['joined_at' => now()]);
+        $closedContest->participants()->attach($contestant->id, ['joined_at' => now()]);
+
+        // 1. Submit with active contest_id -> should succeed and link
+        $response = $this->actingAs($contestant)->post(route('problems.submissions.store', $problem), [
+            'language' => 'cpp',
+            'code' => 'int main() {}',
+            'contest_id' => $activeContest->id,
+        ]);
+        $response->assertRedirect(route('contests.show', $activeContest->id));
+        $this->assertDatabaseHas('submissions', [
+            'problem_id' => $problem->id,
+            'contest_id' => $activeContest->id,
+            'user_id' => $contestant->id,
+        ]);
+
+        // 2. Submit with closed contest_id -> should be rejected
+        $response = $this->actingAs($contestant)->post(route('problems.submissions.store', $problem), [
+            'language' => 'cpp',
+            'code' => 'int main() {}',
+            'contest_id' => $closedContest->id,
+        ]);
+        $response->assertSessionHasErrors('contest_id');
+
+        // 3. Submit without contest_id during active contest window -> should auto-detect and link
+        $response = $this->actingAs($contestant)->post(route('problems.submissions.store', $problem), [
+            'language' => 'cpp',
+            'code' => 'int main() {}',
+        ]);
+        $response->assertRedirect(route('contests.show', $activeContest->id));
+        
+        $latestSubmission = \App\Models\Submission::latest()->first();
+        $this->assertEquals($activeContest->id, $latestSubmission->contest_id);
+    }
+
+    /**
+     * Test problem visibility constraint inside contests.
+     */
+    public function test_problem_visibility_only_after_contest_starts(): void
+    {
+        $judge = User::factory()->create(['status' => 'approved']);
+        $judge->assignRole('ProblemSetter');
+
+        $problem = Problem::create([
+            'title' => 'Future Problem',
+            'slug' => 'future-problem',
+            'statement' => 'Confidential.',
+            'difficulty' => 'hard',
+            'is_published' => true,
+            'created_by' => $judge->id,
+        ]);
+
+        $futureContest = Contest::create([
+            'title' => 'Upcoming Contest',
+            'starts_at' => now()->addHour(),
+            'ends_at' => now()->addHours(3),
+            'is_active' => true,
+            'is_approved' => true,
+            'created_by' => $judge->id,
+        ]);
+        $futureContest->problems()->attach($problem->id, ['label' => 'A']);
+
+        $contestant = User::factory()->create(['status' => 'approved']);
+        $contestant->assignRole('Contestant');
+
+        // 1. Contestant visits future contest details -> should NOT see the problem title or link
+        $response = $this->actingAs($contestant)->get(route('contests.show', $futureContest));
+        $response->assertStatus(200);
+        $response->assertSee('Problems are Locked');
+        $response->assertDontSee($problem->title);
+
+        // 2. Contestant attempts to visit the problem URL directly -> should abort with 403
+        $response = $this->actingAs($contestant)->get(route('problems.show', $problem));
+        $response->assertStatus(403);
+
+        // 3. Admin visits future contest details -> should see the problem
+        $admin = User::factory()->create(['status' => 'approved']);
+        $admin->assignRole('Admin');
+        $response = $this->actingAs($admin)->get(route('contests.show', $futureContest));
+        $response->assertStatus(200);
+        $response->assertDontSee('Problems are Locked');
+        $response->assertSee($problem->title);
+
+        // 4. Creator (judge) visits future contest details -> should see the problem
+        $response = $this->actingAs($judge)->get(route('contests.show', $futureContest));
+        $response->assertStatus(200);
+        $response->assertDontSee('Problems are Locked');
+        $response->assertSee($problem->title);
+    }
 }

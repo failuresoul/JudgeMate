@@ -26,6 +26,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'approved' => \App\Http\Middleware\CheckApproved::class,
         ]);
     })
+    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
+        $schedule->command('contests:refresh-external')->everyTenMinutes();
+    })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

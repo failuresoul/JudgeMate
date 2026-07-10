@@ -35,35 +35,35 @@
                 <thead class="bg-slate-900/50 text-xs font-bold uppercase tracking-wider text-slate-400">
                     <tr>
                         @if(auth()->user()->hasRole('Admin') || auth()->user()->hasRole('ProblemSetter'))
-                            <th scope="col" class="px-6 py-4 whitespace-nowrap">Contestant</th>
+                            <th scope="col" class="px-4 py-3">Contestant</th>
                         @endif
-                        <th scope="col" class="px-6 py-4">Problem</th>
-                        <th scope="col" class="px-6 py-4 whitespace-nowrap">Language</th>
-                        <th scope="col" class="px-6 py-4 whitespace-nowrap">Status</th>
-                        <th scope="col" class="px-6 py-4 w-full">Verdict</th>
-                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-right">Submitted At</th>
+                        <th scope="col" class="px-4 py-3">Problem</th>
+                        <th scope="col" class="px-4 py-3 whitespace-nowrap">Language</th>
+                        <th scope="col" class="px-4 py-3 whitespace-nowrap">Status</th>
+                        <th scope="col" class="px-4 py-3 w-full">Verdict</th>
+                        <th scope="col" class="px-4 py-3 whitespace-nowrap text-right">Submitted At</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800/60 bg-slate-950/20">
                     @forelse($submissions as $submission)
                         <tr class="hover:bg-slate-900/20 transition-colors">
                             @if(auth()->user()->hasRole('Admin') || auth()->user()->hasRole('ProblemSetter'))
-                                <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-200">
+                                <td class="px-4 py-3 font-medium text-slate-200">
                                     {{ $submission->user->name ?? 'Unknown' }}
                                     <div class="text-[10px] text-slate-500 font-mono">{{ $submission->user->email ?? '' }}</div>
                                 </td>
                             @endif
-                            <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-200">
+                            <td class="px-4 py-3 font-medium text-slate-200">
                                 <a href="{{ route('problems.show', $submission->problem) }}" class="hover:text-indigo-400 transition-colors text-base font-semibold">
                                     {{ $submission->problem->title }}
                                 </a>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 py-3 whitespace-nowrap">
                                 <span class="font-mono text-xs uppercase bg-slate-800 px-2.5 py-1 rounded-md text-slate-300 ring-1 ring-slate-700/50">
                                     {{ $submission->language }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 py-3 whitespace-nowrap">
                                 @php
                                     $badgeClasses = [
                                         'pending'               => 'bg-amber-500/10 text-amber-400 ring-amber-500/20',
@@ -89,10 +89,10 @@
                                     {{ $label }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-slate-300 font-mono text-xs verdict-text" data-submission-id="{{ $submission->id }}">
+                            <td class="px-4 py-3 text-slate-300 font-mono text-xs verdict-text" data-submission-id="{{ $submission->id }}">
                                 {{ $submission->verdict_message ?? 'Evaluating...' }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-slate-400 text-right">
+                            <td class="px-4 py-3 whitespace-nowrap text-slate-400 text-right">
                                 {{ $submission->submitted_at->diffForHumans() }}
                             </td>
                         </tr>

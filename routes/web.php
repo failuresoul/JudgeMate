@@ -67,6 +67,8 @@ Route::middleware(['auth', 'approved'])->group(function () {
         ->middleware('role:Admin');
     Route::post('contests/{contest}/register', [ContestController::class, 'register'])
         ->name('contests.register');
+    Route::post('contests/{contest}/join', [ContestController::class, 'join'])
+        ->name('contests.join');
     Route::resource('contests', ContestController::class);
 });
 

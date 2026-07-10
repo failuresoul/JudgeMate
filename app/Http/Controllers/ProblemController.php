@@ -58,6 +58,17 @@ class ProblemController extends Controller
      */
     public function show(Problem $problem)
     {
+        $now = now();
+        $contests = $problem->contests;
+        if ($contests->isNotEmpty()) {
+            $hasStartedContest = $contests->contains(function ($contest) use ($now) {
+                return $now->gte($contest->starts_at);
+            });
+            if (!$hasStartedContest && !auth()->user()->hasRole('Admin') && auth()->id() !== $problem->created_by) {
+                abort(403, 'This problem is part of an upcoming contest and cannot be viewed yet.');
+            }
+        }
+
         $problem->load(['testCases', 'tags']);
         return view('problems.show', compact('problem'));
     }

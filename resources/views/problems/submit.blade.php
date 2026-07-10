@@ -40,6 +40,9 @@
     <div class="rounded-2xl border border-slate-800 bg-slate-900/10 p-6 space-y-6">
         <form action="{{ route('problems.submissions.store', $problem) }}" method="POST" class="space-y-6">
             @csrf
+            @if(request('contest_id'))
+                <input type="hidden" name="contest_id" value="{{ request('contest_id') }}">
+            @endif
 
             {{-- Language Select --}}
             <div class="space-y-2">
@@ -75,7 +78,7 @@
 
             {{-- Action Row --}}
             <div class="flex items-center justify-end gap-3">
-                <a href="{{ route('problems.show', $problem) }}" 
+                <a href="{{ request('contest_id') ? route('contests.show', request('contest_id')) : route('problems.show', $problem) }}" 
                    class="rounded-xl border border-slate-800 bg-slate-900/50 px-5 py-2.5 text-sm font-semibold text-slate-400 hover:bg-slate-800 hover:text-white transition-colors duration-150">
                     Cancel
                 </a>

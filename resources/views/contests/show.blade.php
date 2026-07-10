@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6 max-w-5xl mx-auto">
     {{-- Back Header --}}
-    <div class="flex items-center justify-between border-b border-slate-800 pb-5">
+    <div class="flex items-center justify-between pb-5">
         <a href="{{ route('contests.index') }}" 
            class="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3.5 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-150">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
@@ -36,54 +36,75 @@
             {{-- Problems --}}
             <div>
                 <h2 class="text-xl font-bold text-white mb-4">Contest Problems</h2>
-                <div class="rounded-2xl border border-slate-800 bg-slate-900/30 overflow-hidden shadow-xl">
-                    @if($contest->problems->isEmpty())
-                        <p class="text-sm text-slate-500 text-center py-10">No problems have been added to this contest yet.</p>
-                    @else
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left text-slate-300">
-                                <thead class="bg-slate-900/50 text-xs font-bold uppercase tracking-wider text-slate-400">
-                                    <tr class="border-b border-slate-800">
-                                        <th scope="col" class="px-6 py-4">#</th>
-                                        <th scope="col" class="px-6 py-4">Title</th>
-                                        <th scope="col" class="px-6 py-4">Difficulty</th>
-                                        <th scope="col" class="px-6 py-4">Author</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-800/60 bg-slate-950/20">
-                                    @foreach($contest->problems as $problem)
-                                        <tr class="hover:bg-slate-900/20 transition-colors">
-                                            <td class="px-6 py-4 whitespace-nowrap font-mono text-indigo-400 font-bold text-lg">
-                                                {{ $problem->pivot->label ?? '?' }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-200">
-                                                <a href="{{ route('problems.show', $problem) }}" class="hover:text-indigo-400 transition-colors text-base font-bold">
-                                                    {{ $problem->title }}
-                                                </a>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @php
-                                                    $difficultyColors = [
-                                                        'easy'   => 'text-emerald-400 bg-emerald-500/10 ring-emerald-500/20',
-                                                        'medium' => 'text-amber-400 bg-amber-500/10 ring-amber-500/20',
-                                                        'hard'   => 'text-rose-400 bg-rose-500/10 ring-rose-500/20',
-                                                    ];
-                                                    $color = $difficultyColors[$problem->difficulty] ?? 'text-slate-400 bg-slate-500/10 ring-slate-500/20';
-                                                @endphp
-                                                <span class="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider ring-1 {{ $color }}">
-                                                    {{ $problem->difficulty }}
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-slate-400">
-                                                {{ $problem->creator->name ?? 'System' }}
-                                            </td>
+                @php
+                    $now = now();
+                    $isCreator = auth()->id() === $contest->created_by;
+                    $isAdmin = auth()->user()->hasRole('Admin');
+                    $hasStarted = $now->gte($contest->starts_at);
+                    $canSeeProblems = $isCreator || $isAdmin || $hasStarted;
+                @endphp
+
+                @if($canSeeProblems)
+                    <div class="rounded-2xl border border-slate-800 bg-slate-900/30 overflow-hidden shadow-xl">
+                        @if($contest->problems->isEmpty())
+                            <p class="text-sm text-slate-500 text-center py-10">No problems have been added to this contest yet.</p>
+                        @else
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left text-slate-300">
+                                    <thead class="bg-slate-900/50 text-xs font-bold uppercase tracking-wider text-slate-400">
+                                        <tr class="border-b border-slate-800">
+                                            <th scope="col" class="px-4 py-3">#</th>
+                                            <th scope="col" class="px-4 py-3">Title</th>
+                                            <th scope="col" class="px-4 py-3">Difficulty</th>
+                                            <th scope="col" class="px-4 py-3">Author</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-800/60 bg-slate-950/20">
+                                        @foreach($contest->problems as $problem)
+                                            <tr class="hover:bg-slate-900/20 transition-colors">
+                                                <td class="px-4 py-3 whitespace-nowrap font-mono text-indigo-400 font-bold text-lg">
+                                                    {{ $problem->pivot->label ?? '?' }}
+                                                </td>
+                                                <td class="px-4 py-3 font-semibold text-slate-200">
+                                                    <a href="{{ route('problems.show', [$problem, 'contest_id' => $contest->id]) }}" class="hover:text-indigo-400 transition-colors text-base font-bold">
+                                                        {{ $problem->title }}
+                                                    </a>
+                                                </td>
+                                                <td class="px-4 py-3 whitespace-nowrap">
+                                                    @php
+                                                        $difficultyColors = [
+                                                            'easy'   => 'text-emerald-400 bg-emerald-500/10 ring-emerald-500/20',
+                                                            'medium' => 'text-amber-400 bg-amber-500/10 ring-amber-500/20',
+                                                            'hard'   => 'text-rose-400 bg-rose-500/10 ring-rose-500/20',
+                                                        ];
+                                                        $color = $difficultyColors[$problem->difficulty] ?? 'text-slate-400 bg-slate-500/10 ring-slate-500/20';
+                                                    @endphp
+                                                    <span class="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider ring-1 {{ $color }}">
+                                                        {{ $problem->difficulty }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3 whitespace-nowrap text-slate-400">
+                                                    {{ $problem->creator->name ?? 'System' }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                    </div>
+                @else
+                    <div class="rounded-2xl border border-slate-850 bg-slate-950/40 p-8 text-center space-y-4 shadow-xl">
+                        <div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 border border-slate-800 text-indigo-400">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
                         </div>
-                    @endif
-                </div>
+                        <h3 class="text-lg font-bold text-slate-200">Problems are Locked</h3>
+                        <p class="text-sm text-slate-500 max-w-sm mx-auto">This contest has not started yet. Problems and challenges will be revealed as soon as the contest begins.</p>
+                        <div class="text-xs text-indigo-400 font-mono">Starts {{ $contest->starts_at->diffForHumans() }}</div>
+                    </div>
+                @endif
             </div>
         </div>
 

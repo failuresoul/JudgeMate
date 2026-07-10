@@ -67,4 +67,12 @@ class Contest extends Model
             ->withPivot('joined_at')
             ->as('participant');
     }
+
+    /**
+     * Get the submissions linked to this contest.
+     */
+    public function submissions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Submission::class);
+    }
 }
