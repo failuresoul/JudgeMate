@@ -57,7 +57,18 @@ Route::resource('problems', ProblemController::class)
 
 Route::resource('problems', ProblemController::class)->only(['index', 'show']);
 
+use App\Http\Controllers\ContestController;
 use App\Http\Controllers\SubmissionController;
+
+// Contests routes
+Route::middleware(['auth', 'approved'])->group(function () {
+    Route::post('contests/{contest}/approve', [ContestController::class, 'approve'])
+        ->name('contests.approve')
+        ->middleware('role:Admin');
+    Route::post('contests/{contest}/register', [ContestController::class, 'register'])
+        ->name('contests.register');
+    Route::resource('contests', ContestController::class);
+});
 
 // Test Cases routes
 Route::post('problems/{problem}/test-cases', [TestCaseController::class, 'store'])
