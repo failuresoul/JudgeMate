@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
         $schedule->command('contests:refresh-external')->everyTenMinutes();
+        $schedule->command('contest:update-status')->everyMinute();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

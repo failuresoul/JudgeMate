@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,41 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    /**
+     * Display the specified user's profile.
+     */
+    public function show(Request $request, User $user = null): View
+    {
+        // Default to the currently authenticated user if no user is specified
+        $targetUser = $user ?? $request->user();
+
+        // 1. Efficiently load user details with the count of accepted submissions
+        $targetUser = User::withCount([
+            'submissions as accepted_submissions_count' => function ($query) {
+                $query->where('status', 'accepted');
+            }
+        ])->findOrFail($targetUser->id);
+
+        // 2. Count distinct problems solved
+        $solvedCount = $targetUser->submissions()
+            ->where('status', 'accepted')
+            ->distinct()
+            ->count('problem_id');
+
+        // 3. Get the user's 10 most recent submissions with problem details
+        $recentSubmissions = $targetUser->submissions()
+            ->with('problem')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('profile.show', [
+            'user' => $targetUser,
+            'solvedCount' => $solvedCount,
+            'recentSubmissions' => $recentSubmissions,
+        ]);
+    }
+
     /**
      * Display the user's profile form.
      */
