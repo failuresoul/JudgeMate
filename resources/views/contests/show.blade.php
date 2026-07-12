@@ -6,11 +6,22 @@
 <div class="space-y-6 max-w-5xl mx-auto">
     {{-- Back Header --}}
     <div class="flex items-center justify-between pb-5">
-        <a href="{{ route('contests.index') }}" 
-           class="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3.5 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-150">
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
-            Back to Contests
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('contests.index') }}" 
+               class="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3.5 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-150">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+                Back to Contests
+            </a>
+            @if($contest->is_approved && now()->gte($contest->starts_at))
+                <a href="{{ route('contests.scoreboard', $contest) }}" 
+                   class="inline-flex items-center gap-1.5 rounded-lg border border-indigo-550/20 bg-indigo-500/10 px-3.5 py-2 text-sm font-semibold text-indigo-400 hover:bg-indigo-500/20 hover:text-indigo-300 transition-all duration-150">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+                    </svg>
+                    Scoreboard
+                </a>
+            @endif
+        </div>
         @role('Admin')
         <a href="{{ route('contests.edit', $contest) }}" 
            class="inline-flex items-center gap-1.5 rounded-lg py-2.5 px-4 text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg hover:shadow-indigo-500/30"
@@ -153,24 +164,56 @@
                 </div>
             </div>
 
-            {{-- Participants List --}}
-            <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 space-y-4">
-                <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-400">Participants</h3>
-                @if($contest->participants->isEmpty())
-                    <p class="text-xs text-slate-500">No participants registered yet.</p>
-                @else
-                    <div class="space-y-3 max-h-60 overflow-y-auto">
-                        @foreach($contest->participants as $participant)
-                            <div class="flex items-center justify-between text-xs py-1">
-                                <span class="font-medium text-slate-300">{{ $participant->name }}</span>
-                                <span class="text-slate-500 font-mono">
-                                    {{ $participant->participant->joined_at ? \Carbon\Carbon::parse($participant->participant->joined_at)->diffForHumans() : 'Joined' }}
-                                </span>
-                            </div>
-                        @endforeach
+            @php
+                $hasStarted = now()->gte($contest->starts_at);
+            @endphp
+
+            @if($hasStarted)
+                {{-- Leaderboard Standings Panel --}}
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-400">Leaderboard</h3>
+                        <span class="inline-flex items-center rounded bg-indigo-500/10 px-1.5 py-0.5 text-[10px] font-bold text-indigo-400 ring-1 ring-indigo-500/20">Standings</span>
                     </div>
-                @endif
-            </div>
+                    @if(empty($scoreboardStandings))
+                        <p class="text-xs text-slate-500">No standings computed yet.</p>
+                    @else
+                        <div class="space-y-3 max-h-68 overflow-y-auto divide-y divide-slate-800/60">
+                            @foreach($scoreboardStandings as $index => $standing)
+                                <div class="flex items-center justify-between text-xs py-2 {{ $index > 0 ? 'border-t border-slate-900/30' : '' }}">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono font-bold text-slate-500 w-4">{{ $index + 1 }}</span>
+                                        <span class="font-semibold text-slate-300">{{ $standing['name'] }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2.5 font-mono text-[10px]">
+                                        <span class="text-emerald-400 font-bold" title="Solved Problems">{{ $standing['solve_count'] }} AC</span>
+                                        <span class="text-slate-500" title="Penalty Minutes">{{ $standing['total_penalty'] }}m</span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            @else
+                {{-- Participants List --}}
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 space-y-4">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-400">Participants</h3>
+                    @if($contest->participants->isEmpty())
+                        <p class="text-xs text-slate-500">No participants registered yet.</p>
+                    @else
+                        <div class="space-y-3 max-h-60 overflow-y-auto">
+                            @foreach($contest->participants as $participant)
+                                <div class="flex items-center justify-between text-xs py-1">
+                                    <span class="font-medium text-slate-300">{{ $participant->name }}</span>
+                                    <span class="text-slate-500 font-mono">
+                                        {{ $participant->participant->joined_at ? \Carbon\Carbon::parse($participant->participant->joined_at)->diffForHumans() : 'Joined' }}
+                                    </span>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            @endif
         </div>
     </div>
 </div>

@@ -116,7 +116,64 @@ class ContestController extends Controller implements HasMiddleware
         }
 
         $contest->load(['problems.creator', 'participants']);
-        return view('contests.show', compact('contest'));
+
+        $scoreboardStandings = [];
+        $now = now();
+        $hasStarted = $now->gte($contest->starts_at);
+
+        if ($hasStarted) {
+            $startsAt = $contest->starts_at;
+            foreach ($contest->participants as $participant) {
+                $submissions = \App\Models\Submission::where('contest_id', $contest->id)
+                    ->where('user_id', $participant->id)
+                    ->orderBy('submitted_at', 'asc')
+                    ->get();
+
+                $problemsSolved = 0;
+                $totalPenalty = 0;
+                $submissionsByProblem = $submissions->groupBy('problem_id');
+
+                foreach ($contest->problems as $problem) {
+                    $problemSubmissions = $submissionsByProblem->get($problem->id, collect());
+                    
+                    $firstAccepted = $problemSubmissions->first(function ($sub) {
+                        return $sub->status === 'accepted';
+                    });
+
+                    if ($firstAccepted) {
+                        $problemsSolved++;
+
+                        $wrongAttemptsCount = $problemSubmissions->filter(function ($sub) use ($firstAccepted) {
+                            return $sub->id !== $firstAccepted->id 
+                                && $sub->submitted_at->lt($firstAccepted->submitted_at)
+                                && in_array($sub->status, ['wrong_answer', 'time_limit_exceeded', 'compilation_error']);
+                        })->count();
+
+                        $minutesFromStart = max(0, $startsAt->diffInMinutes($firstAccepted->submitted_at));
+                        $totalPenalty += ($wrongAttemptsCount * 20) + $minutesFromStart;
+                    }
+                }
+
+                $scoreboardStandings[] = [
+                    'name' => $participant->name,
+                    'solve_count' => $problemsSolved,
+                    'total_penalty' => $totalPenalty,
+                ];
+            }
+
+            // Sort: solve_count DESC, total_penalty ASC, name ASC
+            usort($scoreboardStandings, function ($a, $b) {
+                if ($a['solve_count'] !== $b['solve_count']) {
+                    return $b['solve_count'] <=> $a['solve_count'];
+                }
+                if ($a['total_penalty'] !== $b['total_penalty']) {
+                    return $a['total_penalty'] <=> $b['total_penalty'];
+                }
+                return strcmp($a['name'], $b['name']);
+            });
+        }
+
+        return view('contests.show', compact('contest', 'scoreboardStandings'));
     }
 
     /**

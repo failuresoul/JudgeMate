@@ -69,6 +69,11 @@ Route::middleware(['auth', 'approved'])->group(function () {
         ->name('contests.register');
     Route::post('contests/{contest}/join', [ContestController::class, 'join'])
         ->name('contests.join');
+    Route::get('contests/{contest}/scoreboard', [\App\Http\Controllers\ScoreboardController::class, 'show'])
+        ->name('contests.scoreboard');
+    Route::get('contests/{contest}/scoreboard/data', [\App\Http\Controllers\ScoreboardController::class, 'data'])
+        ->name('contests.scoreboard.data')
+        ->middleware('throttle:scoreboard');
     Route::resource('contests', ContestController::class);
 });
 
