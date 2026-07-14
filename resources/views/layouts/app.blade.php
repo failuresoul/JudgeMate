@@ -67,14 +67,13 @@
                     </div>
 
                     <!-- Notification Button -->
-                    <button class="relative rounded-lg p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-900 transition-colors">
+                    <button id="notification-bell" class="relative rounded-lg p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-900 transition-colors">
                         <span class="sr-only">Notifications</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                         </svg>
-                        <span class="absolute top-1.5 right-1.5 flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                        <span id="unread-count-badge" class="absolute top-1 right-1 hidden items-center justify-center px-1.5 py-0.5 text-[9px] font-bold leading-none text-white bg-indigo-600 rounded-full min-w-[14px]">
+                            0
                         </span>
                     </button>
 
@@ -228,6 +227,7 @@
     <!-- Toggle Script for Mobile Sidebar -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Sidebar Mobile Toggle
             const toggleBtn = document.getElementById('mobile-sidebar-toggle');
             const sidebar = document.getElementById('sidebar-nav');
             const overlay = document.getElementById('sidebar-overlay');
@@ -237,8 +237,66 @@
                 overlay.classList.toggle('hidden');
             };
 
-            toggleBtn.addEventListener('click', toggleSidebar);
-            overlay.addEventListener('click', toggleSidebar);
+            if (toggleBtn && sidebar && overlay) {
+                toggleBtn.addEventListener('click', toggleSidebar);
+                overlay.addEventListener('click', toggleSidebar);
+            }
+
+            // Fetch unread notification count
+            const fetchUnreadCount = () => {
+                fetch('{{ route('notifications.unread-count') }}', {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('unread-count-badge');
+                    if (badge) {
+                        if (data.unread_count > 0) {
+                            badge.textContent = data.unread_count;
+                            badge.classList.remove('hidden');
+                            badge.classList.add('flex');
+                        } else {
+                            badge.classList.add('hidden');
+                            badge.classList.remove('flex');
+                            badge.textContent = '0';
+                        }
+                    }
+                })
+                .catch(error => console.error('Error fetching notifications count:', error));
+            };
+
+            fetchUnreadCount();
+
+            // Mark notifications as read on click
+            const bell = document.getElementById('notification-bell');
+            if (bell) {
+                bell.addEventListener('click', () => {
+                    fetch('{{ route('notifications.mark-read') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const badge = document.getElementById('unread-count-badge');
+                            if (badge) {
+                                badge.classList.add('hidden');
+                                badge.classList.remove('flex');
+                                badge.textContent = '0';
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error marking notifications as read:', error));
+                });
+            }
         });
     </script>
 </body>

@@ -93,6 +93,10 @@ Route::middleware(['auth', 'approved'])->group(function () {
     Route::get('problems/{problem}/submit', [SubmissionController::class, 'create'])->name('problems.submit');
     Route::post('problems/{problem}/submissions', [SubmissionController::class, 'store'])->name('problems.submissions.store');
     Route::get('submissions/{submission}/status', [SubmissionController::class, 'status'])->name('submissions.status');
+
+    // Notifications routes
+    Route::get('notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+    Route::post('notifications/mark-read', [\App\Http\Controllers\NotificationController::class, 'markRead'])->name('notifications.mark-read');
 });
 
 require __DIR__.'/auth.php';
