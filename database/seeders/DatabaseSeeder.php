@@ -56,6 +56,9 @@ class DatabaseSeeder extends Seeder
         // 5. Seed sample problems and test cases
         $this->call(ProblemSeeder::class);
 
+        // 6. Seed default badges
+        $this->call(BadgeSeeder::class);
+
         $this->command->info('✅  Database seeded successfully.');
     }
 }

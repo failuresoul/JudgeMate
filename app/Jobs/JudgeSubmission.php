@@ -83,6 +83,10 @@ class JudgeSubmission implements ShouldQueue
         $this->submission->verdict_message = $verdictMessage;
         $this->submission->save();
 
+        if ($status === 'accepted') {
+            app(\App\Services\BadgeService::class)->checkAndAward($this->submission);
+        }
+
         // 5. Send database notification to the submitting user
         $this->submission->user->notify(new SubmissionProcessed($this->submission));
     }

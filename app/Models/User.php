@@ -49,6 +49,15 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the badges earned by the user.
+     */
+    public function badges(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Badge::class, 'user_badges')
+            ->withPivot('awarded_at');
+    }
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var list<string>
