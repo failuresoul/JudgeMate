@@ -7,7 +7,11 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Judge\JudgeController;
 use App\Http\Controllers\ProblemController;
 use App\Http\Controllers\TestCaseController;
+use App\Http\Controllers\LeaderboardController;
 use Illuminate\Support\Facades\Route;
+
+// Public leaderboard route
+Route::get('leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
 
 // Root → login page
 Route::get('/', function () {

@@ -215,7 +215,7 @@
                     </svg>
                 </a>
 
-                <a href="#"
+                <a href="{{ route('leaderboard') }}"
                     class="group flex items-center gap-4 p-3.5 rounded-xl transition-all duration-150 hover:translate-x-1"
                     style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.15);">
                     <div class="flex h-10 w-10 items-center justify-center rounded-xl flex-shrink-0"

@@ -67,6 +67,7 @@
                     </div>
 
                     <!-- Notification Button -->
+                    @auth
                     <button id="notification-bell" class="relative rounded-lg p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-900 transition-colors">
                         <span class="sr-only">Notifications</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -76,25 +77,31 @@
                             0
                         </span>
                     </button>
+                    @endauth
 
                     <!-- User Profile Dropdown & Logout -->
                     <div class="flex items-center gap-3 border-l border-slate-800/80 pl-4">
-                        <div class="hidden md:flex flex-col text-right">
-                            <span class="text-sm font-semibold text-slate-200">{{ auth()->user()->name }}</span>
-                            <span class="text-xs text-indigo-400 font-medium">{{ '@' . auth()->user()->username }}</span>
-                        </div>
-                        <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center font-bold text-white shadow-md">
-                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                        </div>
-                        <!-- Logout Action Form -->
-                        <form method="POST" action="{{ route('logout') }}" class="ml-2">
-                            @csrf
-                            <button type="submit" class="rounded-lg p-1.5 text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors" title="Log Out">
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
-                            </button>
-                        </form>
+                        @auth
+                            <div class="hidden md:flex flex-col text-right">
+                                <span class="text-sm font-semibold text-slate-200">{{ auth()->user()->name }}</span>
+                                <span class="text-xs text-indigo-400 font-medium">{{ '@' . auth()->user()->username }}</span>
+                            </div>
+                            <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center font-bold text-white shadow-md">
+                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            </div>
+                            <!-- Logout Action Form -->
+                            <form method="POST" action="{{ route('logout') }}" class="ml-2">
+                                @csrf
+                                <button type="submit" class="rounded-lg p-1.5 text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors" title="Log Out">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                </button>
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}" class="text-sm font-semibold text-indigo-400 hover:text-indigo-300">Log In</a>
+                            <a href="{{ route('register') }}" class="text-sm font-semibold text-slate-200 hover:text-white bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 rounded-lg transition-colors">Register</a>
+                        @endauth
                     </div>
                 </div>
             </div>
@@ -144,8 +151,8 @@
                                     Submissions
                                 </a>
                             </li>
-                            <li>
-                                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 transition-colors">
+                             <li>
+                                <a href="{{ route('leaderboard') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors {{ Request::is('leaderboard*') ? 'bg-indigo-600/10 text-indigo-400 border-l-2 border-indigo-500 pl-2.5' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50' }}">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                                     </svg>
@@ -155,7 +162,8 @@
                         </ul>
                     </div>
 
-                    <!-- Management Section Title -->
+                     <!-- Management Section Title -->
+                    @auth
                     @role('Admin')
                     <div>
                         <span class="px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Access Management</span>
@@ -179,6 +187,7 @@
                         </ul>
                     </div>
                     @endrole
+                    @endauth
                 </div>
 
                 <!-- Sidebar Footer -->
@@ -242,6 +251,7 @@
                 overlay.addEventListener('click', toggleSidebar);
             }
 
+            @auth
             // Fetch unread notification count
             const fetchUnreadCount = () => {
                 fetch('{{ route('notifications.unread-count') }}', {
@@ -297,6 +307,7 @@
                     .catch(error => console.error('Error marking notifications as read:', error));
                 });
             }
+            @endauth
         });
     </script>
 </body>

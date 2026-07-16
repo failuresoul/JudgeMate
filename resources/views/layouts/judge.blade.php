@@ -79,10 +79,13 @@
                 </div>
 
                 {{-- Notification --}}
-                <button class="relative rounded-lg p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-900 transition-colors">
+                <button id="notification-bell" class="relative rounded-lg p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-900 transition-colors">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
                     </svg>
+                    <span id="unread-count-badge" class="absolute top-1 right-1 hidden items-center justify-center px-1.5 py-0.5 text-[9px] font-bold leading-none text-white bg-indigo-600 rounded-full min-w-[14px]">
+                        0
+                    </span>
                 </button>
 
                 {{-- User info + logout --}}
@@ -179,16 +182,6 @@
                 {{-- Judging --}}
                 <div>
                     <p class="px-3 text-[10px] font-bold uppercase tracking-widest mb-3" style="color:#4c1d95;">Judging</p>
-                    <ul class="space-y-1">
-                        <li>
-                            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all duration-150">
-                                <svg class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                Pending Review
-                                <span class="ml-auto text-[10px] font-semibold px-1.5 py-0.5 rounded-full" style="background:rgba(245,158,11,0.15);color:#fbbf24;">0</span>
-                            </a>
-                        </li>
                         <li>
                             <a href="{{ route('submissions.index') }}"
                                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
@@ -201,7 +194,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all duration-150">
+                            <a href="{{ route('leaderboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 {{ Request::is('leaderboard*') ? 'bg-indigo-600/10 text-indigo-400 border-l-2 border-indigo-500 pl-2.5' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60' }}">
                                 <svg class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                                 </svg>
@@ -272,6 +265,64 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     toggle?.addEventListener('click', toggleSidebar);
     overlay?.addEventListener('click', toggleSidebar);
+
+    @auth
+    // Fetch unread notification count
+    const fetchUnreadCount = () => {
+        fetch('{{ route('notifications.unread-count') }}', {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('unread-count-badge');
+            if (badge) {
+                if (data.unread_count > 0) {
+                    badge.textContent = data.unread_count;
+                    badge.classList.remove('hidden');
+                    badge.classList.add('flex');
+                } else {
+                    badge.classList.add('hidden');
+                    badge.classList.remove('flex');
+                    badge.textContent = '0';
+                }
+            }
+        })
+        .catch(error => console.error('Error fetching notifications count:', error));
+    };
+
+    fetchUnreadCount();
+
+    // Mark notifications as read on click
+    const bell = document.getElementById('notification-bell');
+    if (bell) {
+        bell.addEventListener('click', () => {
+            fetch('{{ route('notifications.mark-read') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const badge = document.getElementById('unread-count-badge');
+                    if (badge) {
+                        badge.classList.add('hidden');
+                        badge.classList.remove('flex');
+                        badge.textContent = '0';
+                    }
+                }
+            })
+            .catch(error => console.error('Error marking notifications as read:', error));
+        });
+    }
+    @endauth
 });
 </script>
 </body>
