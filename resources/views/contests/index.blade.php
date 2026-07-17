@@ -7,8 +7,8 @@
     {{-- Header Section --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 pb-6">
         <div>
-            <h1 class="text-3xl font-extrabold tracking-tight text-white bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-400">Contests</h1>
-            <p class="mt-2 text-sm text-slate-400">Participate in scheduled programming contests, compete with peers, and sharpen your coding skills.</p>
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Contests</h1>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Participate in scheduled programming contests, compete with peers, and sharpen your coding skills.</p>
         </div>
         @role('ProblemSetter')
         <div class="flex-shrink-0">
@@ -55,7 +55,7 @@
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
-                <h2 class="text-lg font-bold text-slate-200 uppercase tracking-wider text-xs">Running Now</h2>
+                <h2 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">Running Now</h2>
             </div>
             <div class="grid gap-4">
                 @foreach($activeContests as $contest)
@@ -67,14 +67,14 @@
 
     {{-- Section 2: Upcoming Contests --}}
     <div class="space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-            <h2 class="text-xl font-bold text-slate-200">Upcoming Contests</h2>
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+            <h2 class="text-xl font-bold text-slate-900 dark:text-slate-200">Upcoming Contests</h2>
             <span class="text-xs text-slate-500 font-mono">Future Schedules</span>
         </div>
         @if(empty($upcomingContests) && empty($activeContests))
-            <div class="flex flex-col items-center justify-center gap-3 py-16 text-center rounded-2xl border border-slate-800 bg-slate-900/10">
-                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 border border-slate-850">
-                    <svg class="h-6 w-6 text-slate-650" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <div class="flex flex-col items-center justify-center gap-3 py-16 text-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/10 shadow-sm dark:shadow-none">
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <svg class="h-6 w-6 text-slate-400 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                 </div>
@@ -92,8 +92,8 @@
     {{-- Section 3: Past Contests --}}
     @if(!empty($pastContests))
         <div class="space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <h2 class="text-xl font-bold text-slate-200">Past Contests</h2>
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-slate-200">Past Contests</h2>
                 <span class="text-xs text-slate-500 font-mono">Ended Events</span>
             </div>
             <div class="grid gap-4">
@@ -107,15 +107,15 @@
     {{-- External Contests Section --}}
     @if(!empty($externalContests))
         <div class="space-y-4 pt-4">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <h2 class="text-xl font-bold text-slate-200">Upcoming Contests on Other Platforms</h2>
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-slate-200">Upcoming Contests on Other Platforms</h2>
                 <span class="text-xs text-slate-500 font-mono">Global Aggregator</span>
             </div>
             
-            <div class="rounded-2xl border border-slate-800 bg-slate-950/20 overflow-hidden shadow-xl">
+            <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/20 overflow-hidden shadow-sm dark:shadow-xl">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-slate-300">
-                        <thead class="bg-slate-900/40 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-850">
+                    <table class="w-full text-sm text-left text-slate-700 dark:text-slate-300">
+                        <thead class="bg-slate-50 dark:bg-slate-900/40 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
                             <tr>
                                 <th scope="col" class="px-6 py-4">Contest Name</th>
                                 <th scope="col" class="px-6 py-4">Platform</th>
@@ -124,35 +124,35 @@
                                 <th scope="col" class="px-6 py-4 text-right">Link</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-850 bg-slate-950/10">
+                        <tbody class="divide-y divide-slate-200 dark:divide-slate-800 bg-transparent">
                             @foreach($externalContests as $ext)
-                                <tr class="hover:bg-slate-900/20 transition-colors duration-150">
-                                    <td class="px-6 py-4 font-semibold text-slate-200">
+                                <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/20 transition-colors duration-150">
+                                    <td class="px-6 py-4 font-semibold text-slate-900 dark:text-slate-200">
                                         {{ $ext['name'] }}
                                     </td>
                                     <td class="px-6 py-4">
                                         @php
                                             $badgeColors = [
-                                                'Codeforces' => 'text-indigo-400 bg-indigo-500/10 ring-indigo-500/20 border-indigo-500/25',
-                                                'CodeChef'   => 'text-amber-400 bg-amber-500/10 ring-amber-500/20 border-amber-500/25',
-                                                'AtCoder'    => 'text-rose-400 bg-rose-500/10 ring-rose-500/20 border-rose-500/25',
-                                                'LeetCode'   => 'text-emerald-400 bg-emerald-500/10 ring-emerald-500/20 border-emerald-500/25',
+                                                'Codeforces' => 'text-indigo-600 bg-indigo-50 border-indigo-200 dark:text-indigo-400 dark:bg-indigo-500/10 dark:ring-indigo-500/20 dark:border-indigo-500/25',
+                                                'CodeChef'   => 'text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-500/10 dark:ring-amber-500/20 dark:border-amber-500/25',
+                                                'AtCoder'    => 'text-rose-600 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:ring-rose-500/20 dark:border-rose-500/25',
+                                                'LeetCode'   => 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:ring-emerald-500/20 dark:border-emerald-500/25',
                                             ];
-                                            $badge = $badgeColors[$ext['site']] ?? 'text-slate-400 bg-slate-500/10 ring-slate-500/20 border-slate-500/25';
+                                            $badge = $badgeColors[$ext['site']] ?? 'text-slate-600 bg-slate-100 border-slate-200 dark:text-slate-400 dark:bg-slate-500/10 dark:ring-slate-500/20 dark:border-slate-500/25';
                                         @endphp
                                         <span class="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ring-1 border {{ $badge }}">
                                             {{ $ext['site'] }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 font-mono text-xs text-slate-400">
+                                    <td class="px-6 py-4 font-mono text-xs text-slate-600 dark:text-slate-400">
                                         {{ $ext['start_time'] }}
                                     </td>
-                                    <td class="px-6 py-4 font-mono text-xs text-slate-400">
+                                    <td class="px-6 py-4 font-mono text-xs text-slate-600 dark:text-slate-400">
                                         {{ $ext['duration'] }}
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <a href="{{ $ext['url'] }}" target="_blank" rel="noopener noreferrer" 
-                                           class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors">
+                                           class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors">
                                             View External
                                             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
