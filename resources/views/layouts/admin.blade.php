@@ -64,6 +64,7 @@
                         <a href="{{ route('admin.users.index') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ Request::routeIs('admin.users.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Users</a>
                         <a href="{{ route('submissions.index') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ Request::routeIs('submissions.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Submissions</a>
                         <a href="{{ route('leaderboard') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ Request::is('leaderboard*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Leaderboard</a>
+                        <a href="{{ route('admin.blogs.index') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ Request::routeIs('admin.blogs.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Review Blogs</a>
                     </nav>
                 </div>
 
@@ -156,6 +157,7 @@
                             <a href="{{ route('admin.users.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ Request::routeIs('admin.users.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Users</a>
                             <a href="{{ route('submissions.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ Request::routeIs('submissions.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Submissions</a>
                             <a href="{{ route('leaderboard') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ Request::is('leaderboard*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Leaderboard</a>
+                            <a href="{{ route('admin.blogs.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ Request::routeIs('admin.blogs.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Review Blogs</a>
                         </div>
                     </div>
                 </div>

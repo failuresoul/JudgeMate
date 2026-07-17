@@ -64,6 +64,7 @@
                         <a href="{{ route('judge.test-cases.index') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ Request::routeIs('judge.test-cases.index') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Test Cases</a>
                         <a href="{{ route('submissions.index') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ Request::routeIs('submissions.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Submissions</a>
                         <a href="{{ route('contests.index') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ Request::routeIs('contests.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Contests</a>
+                        <a href="{{ route('judge.blogs.index') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ Request::routeIs('judge.blogs.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">My Blogs</a>
                     </nav>
                 </div>
 
@@ -156,6 +157,7 @@
                             <a href="{{ route('judge.test-cases.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ Request::routeIs('judge.test-cases.index') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Test Cases</a>
                             <a href="{{ route('submissions.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ Request::routeIs('submissions.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Submissions</a>
                             <a href="{{ route('contests.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ Request::routeIs('contests.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Contests</a>
+                            <a href="{{ route('judge.blogs.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ Request::routeIs('judge.blogs.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800' }}">My Blogs</a>
                         </div>
                     </div>
                 </div>

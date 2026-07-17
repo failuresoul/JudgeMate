@@ -63,6 +63,7 @@
                         <a href="{{ route('problems.index') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ Request::is('problems*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Problemset</a>
                         <a href="{{ route('submissions.index') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ Request::routeIs('submissions.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Submissions</a>
                         <a href="{{ route('leaderboard') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ Request::is('leaderboard*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Standings</a>
+                        <a href="{{ route('blogs.index') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ Request::is('blogs*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Inspiration</a>
                         @auth
                         @role('Admin')
                         <a href="{{ route('admin.users.index') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ Request::routeIs('admin.users.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Admin</a>
@@ -159,6 +160,7 @@
                             <a href="{{ route('problems.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ Request::is('problems*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Problemset</a>
                             <a href="{{ route('submissions.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ Request::routeIs('submissions.*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Submissions</a>
                             <a href="{{ route('leaderboard') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ Request::is('leaderboard*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Standings</a>
+                            <a href="{{ route('blogs.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ Request::is('blogs*') ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800' }}">Inspiration</a>
                         </div>
                     </div>
                 </div>

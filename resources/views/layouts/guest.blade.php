@@ -15,6 +15,22 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+        @if(request()->routeIs('register'))
+            <!-- Force Day Mode for Register Page -->
+            <script>
+                document.documentElement.classList.remove('dark');
+            </script>
+        @else
+            <!-- Prevent FOUC and Respect Theme for Login -->
+            <script>
+                if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            </script>
+        @endif
+
         <style>
             * { font-family: 'Plus Jakarta Sans', sans-serif; }
             code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
@@ -55,18 +71,6 @@
             .code-scroll-anim { animation: code-scroll 30s linear infinite; }
             .cursor-blink { animation: type-cursor 1s step-end infinite; }
 
-            .glass-card {
-                background: rgba(15, 23, 42, 0.7);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                border: 1px solid rgba(148, 163, 184, 0.1);
-            }
-            .gradient-text {
-                background: linear-gradient(135deg, #fff 30%, #94a3b8 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-            }
             .brand-text {
                 background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
                 -webkit-background-clip: text;
@@ -75,27 +79,23 @@
             }
         </style>
     </head>
-    <body class="h-full antialiased" style="background: #020817;">
+    <body class="h-full antialiased bg-slate-50 dark:bg-[#020817] transition-colors duration-200">
 
         <div class="min-h-screen flex">
 
             {{-- ═══════════════════════════════════════════════
                  LEFT PANEL — Branding & Code Art (hidden on mobile)
             ═══════════════════════════════════════════════ --}}
-            <div class="hidden lg:flex lg:w-[52%] xl:w-[55%] relative overflow-hidden flex-col justify-between p-12"
-                 style="background: linear-gradient(135deg, #0d1526 0%, #0a0f1e 60%, #0d0e1f 100%);">
+            <div class="hidden lg:flex lg:w-[52%] xl:w-[55%] relative overflow-hidden flex-col justify-between p-12 bg-gradient-to-br from-indigo-50 via-white to-indigo-100 dark:from-[#0d1526] dark:via-[#0a0f1e] dark:to-[#0d0e1f]">
 
                 {{-- Animated background blobs --}}
                 <div class="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div class="blob-1 absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-20"
+                    <div class="blob-1 absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-40 dark:opacity-20"
                          style="background: radial-gradient(circle, #4f46e5 0%, transparent 70%);"></div>
-                    <div class="blob-2 absolute top-1/2 -right-24 w-80 h-80 rounded-full opacity-15"
+                    <div class="blob-2 absolute top-1/2 -right-24 w-80 h-80 rounded-full opacity-30 dark:opacity-15"
                          style="background: radial-gradient(circle, #7c3aed 0%, transparent 70%);"></div>
-                    <div class="blob-3 absolute -bottom-16 left-1/3 w-72 h-72 rounded-full opacity-10"
+                    <div class="blob-3 absolute -bottom-16 left-1/3 w-72 h-72 rounded-full opacity-30 dark:opacity-10"
                          style="background: radial-gradient(circle, #2563eb 0%, transparent 70%);"></div>
-                    {{-- Grid pattern --}}
-                    <div class="absolute inset-0 opacity-[0.03]"
-                         style="background-image: linear-gradient(#6366f1 1px, transparent 1px), linear-gradient(90deg, #6366f1 1px, transparent 1px); background-size: 48px 48px;"></div>
                 </div>
 
                 {{-- Top: Brand --}}
@@ -105,20 +105,19 @@
                              style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
                             <x-application-logo class="w-7 h-7 text-white" />
                         </div>
-                        <span class="text-xl font-bold tracking-tight text-white">Judge<span class="brand-text">Mate</span></span>
+                        <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Judge<span class="brand-text">Mate</span></span>
                     </a>
                 </div>
 
                 {{-- Middle: Animated Code Terminal --}}
                 <div class="relative z-10 float-anim">
-                    <div class="rounded-2xl overflow-hidden shadow-2xl shadow-indigo-950/60"
-                         style="border: 1px solid rgba(99,102,241,0.2); background: rgba(8,12,28,0.9);">
+                    <div class="rounded-2xl overflow-hidden shadow-2xl shadow-indigo-900/20 dark:shadow-indigo-950/60 border border-slate-700/50 dark:border-indigo-500/20 bg-[#0a0f1e]/95 backdrop-blur-xl">
                         {{-- Terminal bar --}}
-                        <div class="flex items-center gap-2 px-4 py-3" style="background: rgba(99,102,241,0.1); border-bottom: 1px solid rgba(99,102,241,0.15);">
+                        <div class="flex items-center gap-2 px-4 py-3 bg-white/5 border-b border-white/5">
                             <span class="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
                             <span class="w-3 h-3 rounded-full bg-amber-400 opacity-80"></span>
                             <span class="w-3 h-3 rounded-full bg-emerald-500 opacity-80"></span>
-                            <span class="mono text-xs text-slate-500 ml-2">judgemate ~ verdict engine</span>
+                            <span class="mono text-xs text-slate-400 ml-2">judgemate ~ verdict engine</span>
                         </div>
                         {{-- Code content --}}
                         <div class="p-5 overflow-hidden h-72 relative">
@@ -144,7 +143,7 @@
   <span class="text-slate-300">};</span>
 <span class="text-slate-300">}</span>
 
-<span class="text-slate-600">// --- Pending submissions queue ---</span>
+<span class="text-slate-500">// --- Pending submissions queue ---</span>
 <span class="text-violet-400">const</span> <span class="text-slate-300">queue = [</span>
   <span class="text-emerald-400">"sub_8f3a"</span><span class="text-slate-300">,</span> <span class="text-emerald-400">"sub_9b2c"</span><span class="text-slate-300">,</span> <span class="text-emerald-400">"sub_7e1d"</span>
 <span class="text-slate-300">];</span>
@@ -174,19 +173,16 @@
 </pre>
                             </div>
                             {{-- Fade overlay bottom --}}
-                            <div class="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
-                                 style="background: linear-gradient(to top, rgba(8,12,28,0.95), transparent);"></div>
+                            <div class="absolute bottom-0 left-0 right-0 h-20 pointer-events-none bg-gradient-to-t from-[#0a0f1e]/95 to-transparent"></div>
                         </div>
                     </div>
 
                     {{-- Verdict badges floating near terminal --}}
-                    <div class="absolute -top-4 -right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold shadow-lg"
-                         style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #34d399;">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" style="box-shadow: 0 0 6px #34d399;"></span>
+                    <div class="absolute -top-4 -right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold shadow-lg bg-[#0a0f1e] border border-emerald-500/30 text-emerald-400">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block shadow-[0_0_6px_#34d399]"></span>
                         Accepted
                     </div>
-                    <div class="absolute -bottom-3 left-8 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold shadow-lg"
-                         style="background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24;">
+                    <div class="absolute -bottom-3 left-8 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold shadow-lg bg-[#0a0f1e] border border-amber-500/25 text-amber-400">
                         42ms · 4MB
                     </div>
                 </div>
@@ -195,15 +191,15 @@
                 <div class="relative z-10">
                     <div class="grid grid-cols-3 gap-4 mb-8">
                         <div class="text-center">
-                            <p class="text-2xl font-bold gradient-text">10K+</p>
+                            <p class="text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">10K+</p>
                             <p class="text-xs text-slate-500 mt-0.5">Submissions</p>
                         </div>
-                        <div class="text-center" style="border-left: 1px solid rgba(148,163,184,0.1); border-right: 1px solid rgba(148,163,184,0.1);">
-                            <p class="text-2xl font-bold gradient-text">500+</p>
+                        <div class="text-center border-l border-r border-slate-200 dark:border-slate-800/50">
+                            <p class="text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">500+</p>
                             <p class="text-xs text-slate-500 mt-0.5">Problems</p>
                         </div>
                         <div class="text-center">
-                            <p class="text-2xl font-bold gradient-text">98%</p>
+                            <p class="text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">98%</p>
                             <p class="text-xs text-slate-500 mt-0.5">Accuracy</p>
                         </div>
                     </div>
@@ -216,14 +212,13 @@
             {{-- ═══════════════════════════════════════════════
                  RIGHT PANEL — Auth Form
             ═══════════════════════════════════════════════ --}}
-            <div class="flex-1 flex flex-col justify-center items-center p-6 sm:p-10 lg:p-12 relative overflow-y-auto"
-                 style="background: #030712;">
+            <div class="flex-1 flex flex-col justify-center items-center p-6 sm:p-10 lg:p-12 relative overflow-y-auto bg-slate-50 dark:bg-[#030712]">
 
                 {{-- Background blobs (mobile only) --}}
                 <div class="lg:hidden absolute inset-0 overflow-hidden pointer-events-none">
-                    <div class="absolute -top-20 -right-20 w-72 h-72 rounded-full opacity-10"
+                    <div class="absolute -top-20 -right-20 w-72 h-72 rounded-full opacity-10 dark:opacity-10"
                          style="background: radial-gradient(circle, #4f46e5 0%, transparent 70%);"></div>
-                    <div class="absolute -bottom-20 -left-20 w-64 h-64 rounded-full opacity-10"
+                    <div class="absolute -bottom-20 -left-20 w-64 h-64 rounded-full opacity-10 dark:opacity-10"
                          style="background: radial-gradient(circle, #7c3aed 0%, transparent 70%);"></div>
                 </div>
 
@@ -235,7 +230,7 @@
                                  style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
                                 <x-application-logo class="w-8 h-8 text-white" />
                             </div>
-                            <span class="text-2xl font-bold tracking-tight text-white mt-1">Judge<span class="brand-text">Mate</span></span>
+                            <span class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">Judge<span class="brand-text">Mate</span></span>
                         </a>
                         <p class="text-xs text-slate-500">Competitive Programming Judge Platform</p>
                     </div>
@@ -248,12 +243,12 @@
                     @endif
 
                     {{-- Form card --}}
-                    <div class="glass-card rounded-2xl px-7 py-8 shadow-2xl">
+                    <div class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl px-7 py-8 shadow-2xl">
                         {{ $slot }}
                     </div>
 
                     {{-- Footer --}}
-                    <p class="text-center text-xs text-slate-700 mt-6">
+                    <p class="text-center text-xs text-slate-500 mt-8 mb-4">
                         © {{ date('Y') }} JudgeMate · All rights reserved
                     </p>
                 </div>

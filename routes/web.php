@@ -42,6 +42,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'approved', 'role:Ad
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::post('/users/{user}/approve', [UserManagementController::class, 'approve'])->name('users.approve');
     Route::post('/users/{user}/reject', [UserManagementController::class, 'reject'])->name('users.reject');
+    
+    // Admin Blog routes
+    Route::get('/blogs', [\App\Http\Controllers\Admin\BlogController::class, 'index'])->name('blogs.index');
+    Route::patch('/blogs/{blog}', [\App\Http\Controllers\Admin\BlogController::class, 'update'])->name('blogs.update');
 });
 
 // Judge / ProblemSetter routes — requires login + ProblemSetter role
@@ -49,7 +53,13 @@ Route::prefix('judge')->name('judge.')->middleware(['auth', 'approved', 'role:Pr
     Route::get('/', [JudgeController::class, 'dashboard'])->name('dashboard');
     Route::get('/test-cases', [TestCaseController::class, 'index'])->name('test-cases.index');
     Route::get('/problems/{problem}/test-cases', [TestCaseController::class, 'show'])->name('test-cases.show');
+    
+    // Judge Blog routes
+    Route::resource('blogs', \App\Http\Controllers\Judge\BlogController::class)->except(['show', 'edit', 'update']);
 });
+
+// Public Blog (Inspiration) route
+Route::get('blogs', [\App\Http\Controllers\BlogController::class, 'index'])->name('blogs.index')->middleware(['auth', 'approved']);
 
 // Problems routes
 Route::resource('problems', ProblemController::class)
