@@ -79,6 +79,8 @@ Route::middleware(['auth', 'approved'])->group(function () {
     Route::get('contests/{contest}/scoreboard/data', [\App\Http\Controllers\ScoreboardController::class, 'data'])
         ->name('contests.scoreboard.data')
         ->middleware('throttle:scoreboard');
+    Route::get('contests/{contest}/scoreboard/pdf', [\App\Http\Controllers\ScoreboardController::class, 'downloadPdf'])
+        ->name('contests.scoreboard.pdf');
     Route::resource('contests', ContestController::class);
 });
 

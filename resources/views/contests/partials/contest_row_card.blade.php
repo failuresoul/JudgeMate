@@ -85,7 +85,31 @@
     </div>
 
     {{-- Right column: Action buttons --}}
-    <div class="flex items-center gap-2 self-start md:self-center">
+    <div class="flex flex-wrap items-center gap-2 self-start md:self-center">
+        {{-- Scoreboard Action --}}
+        @if($contest->is_approved)
+            @if($type === 'active')
+                {{-- Running contest: Big prominent Scoreboard button --}}
+                <a href="{{ route('contests.scoreboard', $contest) }}" 
+                   class="inline-flex items-center gap-2 rounded-xl py-2.5 px-5 text-sm font-extrabold text-white shadow-md shadow-indigo-500/15 hover:shadow-indigo-500/25 transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]"
+                   style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                    <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    Scoreboard
+                </a>
+            @else
+                {{-- Upcoming/Past contest: Regular Scoreboard button --}}
+                <a href="{{ route('contests.scoreboard', $contest) }}" 
+                   class="inline-flex items-center gap-1.5 rounded-xl bg-slate-800 border border-slate-700 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-150">
+                    <svg class="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    Scoreboard
+                </a>
+            @endif
+        @endif
+
         {{-- Admin Approve Action --}}
         @if(!$contest->is_approved)
             @role('Admin')

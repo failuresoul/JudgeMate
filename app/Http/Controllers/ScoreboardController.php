@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Contest;
 use App\Models\Submission;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -31,6 +32,32 @@ class ScoreboardController extends Controller
             return response()->json(['error' => 'Contest not approved.'], 403);
         }
 
+        $data = $this->calculateScoreboardData($contest);
+
+        return response()->json($data);
+    }
+
+    /**
+     * Download the scoreboard as a PDF.
+     */
+    public function downloadPdf(Contest $contest)
+    {
+        if (!$contest->is_approved) {
+            abort(403, 'Contest not approved.');
+        }
+
+        $data = $this->calculateScoreboardData($contest);
+
+        $pdf = Pdf::loadView('contests.scoreboard-pdf', $data);
+
+        return $pdf->download('scoreboard-' . $contest->id . '.pdf');
+    }
+
+    /**
+     * Calculate and sort the scoreboard statistics (ICPC-style).
+     */
+    private function calculateScoreboardData(Contest $contest): array
+    {
         // Eager load participants and problems
         $contest->load(['participants', 'problems']);
         
@@ -100,6 +127,7 @@ class ScoreboardController extends Controller
             $scoreboard[] = [
                 'user_id' => $participant->id,
                 'name' => $participant->name,
+                'username' => $participant->username,
                 'solve_count' => $problemsSolved,
                 'total_penalty' => $totalPenalty,
                 'problems' => $problemDetails,
@@ -117,10 +145,11 @@ class ScoreboardController extends Controller
             return strcmp($a['name'], $b['name']);
         });
 
-        return response()->json([
+        return [
             'contest' => [
                 'id' => $contest->id,
                 'title' => $contest->title,
+                'date' => $startsAt->format('F d, Y'),
             ],
             'problems' => $contest->problems->map(function ($p) {
                 return [
@@ -130,6 +159,6 @@ class ScoreboardController extends Controller
                 ];
             }),
             'rows' => $scoreboard,
-        ]);
+        ];
     }
 }
