@@ -6,6 +6,15 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
+    @if (session('reset_url'))
+        <div class="mb-6 p-4 text-sm text-emerald-800 bg-emerald-50 dark:bg-emerald-500/10 dark:text-emerald-400 rounded-xl border border-emerald-200 dark:border-emerald-500/20">
+            <strong class="font-bold block mb-2">Reset Link:</strong>
+            <div style="word-break: break-all; overflow-wrap: anywhere; white-space: normal;">
+                <a href="{{ session('reset_url') }}" class="font-mono text-[11px] leading-relaxed underline hover:text-emerald-900 dark:hover:text-emerald-300">{{ session('reset_url') }}</a>
+            </div>
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('password.email') }}">
         @csrf
 

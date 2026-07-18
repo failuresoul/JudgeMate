@@ -15,7 +15,16 @@ class ProblemController extends Controller
      */
     public function index()
     {
-        $problems = Problem::with('creator')->latest()->paginate(10);
+        $query = Problem::with('creator')->latest();
+        
+        if (!auth()->user()->hasRole('Admin')) {
+            $query->where(function($q) {
+                $q->where('is_published', true)
+                  ->orWhere('created_by', auth()->id());
+            });
+        }
+        
+        $problems = $query->paginate(10);
         return view('problems.index', compact('problems'));
     }
 
@@ -115,5 +124,13 @@ class ProblemController extends Controller
 
         return redirect()->route('problems.index')
             ->with('success', 'Problem deleted successfully.');
+    }
+    public function togglePublish(Problem $problem)
+    {
+        $problem->is_published = !$problem->is_published;
+        $problem->save();
+
+        $status = $problem->is_published ? 'approved and published' : 'unpublished';
+        return back()->with('success', "Problem successfully {$status}.");
     }
 }

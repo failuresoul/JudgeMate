@@ -17,30 +17,30 @@
         @forelse($blogs as $blog)
             <div class="flex flex-col group rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden hover:-translate-y-1">
                 @if($blog->image_path)
-                    <div class="relative overflow-hidden h-64">
+                    <div class="relative overflow-hidden h-48 sm:h-56 lg:h-64 shrink-0">
                         <img src="{{ asset('storage/' . $blog->image_path) }}" alt="{{ $blog->title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
                     </div>
                 @else
-                    <div class="relative overflow-hidden h-48 bg-gradient-to-br from-indigo-500/10 to-violet-500/10 flex items-center justify-center">
+                    <div class="relative overflow-hidden h-48 sm:h-56 lg:h-64 shrink-0 bg-gradient-to-br from-indigo-500/10 to-violet-500/10 flex items-center justify-center">
                         <svg class="w-16 h-16 text-indigo-500/30 dark:text-indigo-400/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
                         </svg>
                     </div>
                 @endif
-                <div class="p-6 flex-1 flex flex-col">
+                <div class="p-5 sm:p-6 flex-1 flex flex-col">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="h-10 w-10 shrink-0 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
                             {{ substr($blog->author->name, 0, 1) }}
                         </div>
-                        <div>
-                            <p class="text-sm font-bold text-slate-900 dark:text-white">{{ $blog->author->name }}</p>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ $blog->author->name }}</p>
                             <p class="text-xs text-slate-500">{{ $blog->created_at->format('M d, Y') }}</p>
                         </div>
                     </div>
                     
-                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">{{ $blog->title }}</h3>
-                    <p class="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap leading-relaxed flex-1">{{ $blog->content }}</p>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-3 break-words">{{ $blog->title }}</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap leading-relaxed flex-1 break-words">{{ $blog->content }}</p>
                 </div>
             </div>
         @empty

@@ -40,9 +40,6 @@ Route::middleware(['auth', 'approved'])->group(function () {
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'approved', 'role:Admin'])->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
-    Route::post('/users/{user}/approve', [UserManagementController::class, 'approve'])->name('users.approve');
-    Route::post('/users/{user}/reject', [UserManagementController::class, 'reject'])->name('users.reject');
-    
     // Admin Blog routes
     Route::get('/blogs', [\App\Http\Controllers\Admin\BlogController::class, 'index'])->name('blogs.index');
     Route::patch('/blogs/{blog}', [\App\Http\Controllers\Admin\BlogController::class, 'update'])->name('blogs.update');
@@ -107,6 +104,9 @@ Route::delete('test-cases/{test_case}', [TestCaseController::class, 'destroy'])
 Route::middleware(['auth', 'approved'])->group(function () {
     Route::get('submissions', [SubmissionController::class, 'index'])->name('submissions.index');
     Route::get('problems/{problem}/submit', [SubmissionController::class, 'create'])->name('problems.submit');
+    Route::patch('/problems/{problem}/toggle-publish', [ProblemController::class, 'togglePublish'])
+        ->name('problems.toggle-publish')
+        ->middleware(['role:Admin']);
     Route::post('problems/{problem}/submissions', [SubmissionController::class, 'store'])->name('problems.submissions.store');
     Route::get('submissions/{submission}/status', [SubmissionController::class, 'status'])->name('submissions.status');
 

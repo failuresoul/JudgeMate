@@ -5,14 +5,14 @@
 @section('content')
 <div class="space-y-6">
     {{-- Header --}}
-    <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-5">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-5 gap-4">
         <div>
             <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Problems</h1>
             <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Practice your coding skills by solving problems.</p>
         </div>
         @hasrole('ProblemSetter')
         <a href="{{ route('problems.create') }}" 
-           class="inline-flex items-center gap-1.5 rounded-lg py-2.5 px-4 text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg hover:shadow-indigo-500/30 active:scale-[.98] focus:outline-none focus:ring-2 focus:ring-indigo-500/60"
+           class="shrink-0 whitespace-nowrap self-start sm:self-auto inline-flex items-center gap-1.5 rounded-lg py-2.5 px-4 text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg hover:shadow-indigo-500/30 active:scale-[.98] focus:outline-none focus:ring-2 focus:ring-indigo-500/60"
            style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
             Create Problem
         </a>
@@ -34,16 +34,16 @@
             </div>
         @else
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
+                <table class="w-full text-sm min-w-[700px]">
                     <thead>
                         <tr class="border-b border-slate-200 dark:border-slate-800 text-left bg-slate-50 dark:bg-transparent">
                             <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Title</th>
                             <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Difficulty</th>
                             <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Creator</th>
                             <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
-                            @role('ProblemSetter')
+                            @hasanyrole('ProblemSetter|Admin')
                             <th class="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 text-right">Actions</th>
-                            @endrole
+                            @endhasanyrole
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
@@ -89,16 +89,41 @@
                                         Published
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-slate-50 dark:bg-slate-500/10 px-2.5 py-0.5 text-xs font-semibold text-slate-600 dark:text-slate-400 ring-1 ring-slate-200 dark:ring-slate-500/20">
-                                        Draft
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 dark:bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400 ring-1 ring-amber-200 dark:ring-amber-500/20">
+                                        Pending
                                     </span>
                                 @endif
                             </td>
 
                             {{-- Actions --}}
-                            @role('ProblemSetter')
+                            @hasanyrole('ProblemSetter|Admin')
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
+                                    @role('Admin')
+                                        @if(!$problem->is_published)
+                                            <form method="POST" action="{{ route('problems.toggle-publish', $problem) }}" class="inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit"
+                                                    class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-200 dark:ring-emerald-500/20 hover:bg-emerald-500/20 transition-colors duration-150"
+                                                    onclick="return confirm('Approve and publish this problem?')">
+                                                    Approve
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form method="POST" action="{{ route('problems.toggle-publish', $problem) }}" class="inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit"
+                                                    class="inline-flex items-center gap-1.5 rounded-lg bg-red-50 dark:bg-red-500/10 px-2.5 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 ring-1 ring-red-200 dark:ring-red-500/20 hover:bg-red-500/20 transition-colors duration-150"
+                                                    onclick="return confirm('Unpublish this problem?')">
+                                                    Unpublish
+                                                </button>
+                                            </form>
+                                        @endif
+                                    @endrole
+
+                                    @role('ProblemSetter')
                                     <a href="{{ route('problems.edit', $problem) }}" 
                                        class="inline-flex items-center gap-1 rounded-lg bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-white transition-colors duration-150">
                                         Edit
@@ -112,9 +137,10 @@
                                             Delete
                                         </button>
                                     </form>
+                                    @endrole
                                 </div>
                             </td>
-                            @endrole
+                            @endhasanyrole
                         </tr>
                         @endforeach
                     </tbody>

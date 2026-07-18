@@ -26,11 +26,11 @@
                             <div class="flex items-center gap-2">
                                 <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Test Case #{{ $index + 1 }}</span>
                                 @if($tc->is_hidden)
-                                    <span class="inline-flex items-center rounded bg-amber-50 dark:bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 ring-1 ring-inset ring-amber-500/20">
+                                    <span class="inline-flex items-center rounded bg-amber-50 dark:bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 ring-1 ring-inset ring-amber-200 dark:ring-amber-500/20">
                                         Hidden
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center rounded bg-emerald-50 dark:bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 ring-1 ring-inset ring-emerald-500/20">
+                                    <span class="inline-flex items-center rounded bg-emerald-50 dark:bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 ring-1 ring-inset ring-emerald-200 dark:ring-emerald-500/20">
                                         Visible / Sample
                                     </span>
                                 @endif

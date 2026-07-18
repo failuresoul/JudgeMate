@@ -14,19 +14,19 @@
         <div class="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-violet-100 dark:bg-violet-500/10 blur-3xl"></div>
 
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-            <div>
-                <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-                    <span class="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20">
-                        <i class="bi bi-trophy text-2xl"></i>
+            <div class="min-w-0">
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+                    <span class="shrink-0 p-2 rounded-xl bg-indigo-50 dark:bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20">
+                        <i class="bi bi-trophy text-xl sm:text-2xl"></i>
                     </span>
-                    Global Leaderboard
+                    <span class="truncate">Global Leaderboard</span>
                 </h1>
                 <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
                     See overall user standings or browse individual live and past contest scoreboards.
                 </p>
             </div>
             
-            <div class="flex items-center gap-3 px-4 py-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-xs font-semibold text-slate-600 dark:text-slate-400">
+            <div class="flex items-center self-start md:self-auto shrink-0 gap-3 px-4 py-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-xs font-semibold text-slate-600 dark:text-slate-400">
                 <span class="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
                 Updated Live
             </div>
@@ -46,15 +46,15 @@
                 
                 {{-- Ongoing Live Scoreboard --}}
                 <div class="space-y-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <span class="relative flex h-3 w-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="relative flex h-3 w-3 shrink-0">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                             </span>
-                            <h2 class="text-lg font-black text-slate-900 dark:text-white tracking-tight">Live Scoreboard: {{ $ongoing->title }}</h2>
+                            <h2 class="text-lg font-black text-slate-900 dark:text-white tracking-tight truncate">Live Scoreboard: {{ $ongoing->title }}</h2>
                         </div>
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-200 dark:ring-emerald-500/20">
+                        <span class="inline-flex shrink-0 self-start sm:self-auto items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-200 dark:ring-emerald-500/20">
                             Ends {{ $ongoing->ends_at->diffForHumans() }}
                         </span>
                     </div>
@@ -103,7 +103,7 @@
 
                 <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/30 overflow-hidden shadow-sm dark:shadow-xl">
                     <div class="overflow-x-auto">
-                        <table class="w-full divide-y divide-slate-200 dark:divide-slate-800 text-left text-sm text-slate-700 dark:text-slate-300">
+                        <table class="w-full divide-y divide-slate-200 dark:divide-slate-800 text-left text-sm text-slate-700 dark:text-slate-300 min-w-[550px]">
                             <thead class="bg-slate-50 dark:bg-slate-900/50 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                                 <tr>
                                     <th scope="col" class="px-6 py-4 w-24">Rank</th>
