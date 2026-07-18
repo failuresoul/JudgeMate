@@ -13,18 +13,30 @@ class ProblemController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $query = Problem::with('creator')->latest();
+        $query = Problem::with('creator');
         
-        if (!auth()->user()->hasRole('Admin')) {
-            $query->where(function($q) {
-                $q->where('is_published', true)
-                  ->orWhere('created_by', auth()->id());
-            });
+        $user = auth()->user();
+        if ($user && $user->hasRole('Admin')) {
+            // Admin sees all problems
+        } elseif ($user && $user->hasRole('ProblemSetter')) {
+            // Judges only see the problems they created
+            $query->where('created_by', $user->id);
+        } else {
+            // Standard users and guests see all published problems
+            $query->where('is_published', true);
         }
         
-        $problems = $query->paginate(10);
+        if ($request->sort === 'difficulty_asc') {
+            $query->orderByRaw("FIELD(difficulty, 'easy', 'medium', 'hard')");
+        } elseif ($request->sort === 'difficulty_desc') {
+            $query->orderByRaw("FIELD(difficulty, 'hard', 'medium', 'easy')");
+        } else {
+            $query->latest();
+        }
+        
+        $problems = $query->paginate(10)->withQueryString();
         return view('problems.index', compact('problems'));
     }
 
@@ -73,7 +85,8 @@ class ProblemController extends Controller
             $hasStartedContest = $contests->contains(function ($contest) use ($now) {
                 return $now->gte($contest->starts_at);
             });
-            if (!$hasStartedContest && !auth()->user()->hasRole('Admin') && auth()->id() !== $problem->created_by) {
+            $isAdmin = auth()->check() && auth()->user()->hasRole('Admin');
+            if (!$hasStartedContest && !$isAdmin && auth()->id() !== $problem->created_by) {
                 abort(403, 'This problem is part of an upcoming contest and cannot be viewed yet.');
             }
         }

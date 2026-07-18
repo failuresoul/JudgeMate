@@ -10,16 +10,23 @@
             <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Problems</h1>
             <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Practice your coding skills by solving problems.</p>
         </div>
-        @hasrole('ProblemSetter')
-        <a href="{{ route('problems.create') }}" 
-           class="shrink-0 whitespace-nowrap self-start sm:self-auto inline-flex items-center gap-1.5 rounded-lg py-2.5 px-4 text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg hover:shadow-indigo-500/30 active:scale-[.98] focus:outline-none focus:ring-2 focus:ring-indigo-500/60"
-           style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
-            Create Problem
-        </a>
-        @endrole
+        <div class="flex items-center gap-3">
+            <form method="GET" action="{{ route('problems.index') }}" class="m-0">
+                <select name="sort" onchange="this.form.submit()" class="rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:ring-indigo-500 focus:border-indigo-500 dark:text-slate-300 py-2.5 pl-3 pr-10 cursor-pointer shadow-sm">
+                    <option value="">Sort by Newest</option>
+                    <option value="difficulty_asc" {{ request('sort') == 'difficulty_asc' ? 'selected' : '' }}>Difficulty: Easy to Hard</option>
+                    <option value="difficulty_desc" {{ request('sort') == 'difficulty_desc' ? 'selected' : '' }}>Difficulty: Hard to Easy</option>
+                </select>
+            </form>
+            @hasrole('ProblemSetter')
+            <a href="{{ route('problems.create') }}" 
+               class="shrink-0 whitespace-nowrap self-start sm:self-auto inline-flex items-center gap-1.5 rounded-lg py-2.5 px-4 text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg hover:shadow-indigo-500/30 active:scale-[.98] focus:outline-none focus:ring-2 focus:ring-indigo-500/60"
+               style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
+                Create Problem
+            </a>
+            @endrole
+        </div>
     </div>
-
-
 
     {{-- Problems Table --}}
     <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/30 overflow-hidden shadow-sm dark:shadow-xl">

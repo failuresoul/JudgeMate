@@ -188,18 +188,24 @@
                 </div>
 
                 {{-- Bottom: Stats --}}
+                @php
+                    $totalSubmissions = \App\Models\Submission::count();
+                    $totalProblems = \App\Models\Problem::where('is_published', true)->count();
+                    $totalAccepted = \App\Models\Submission::where('status', 'accepted')->count();
+                    $accuracy = $totalSubmissions > 0 ? round(($totalAccepted / $totalSubmissions) * 100) : 0;
+                @endphp
                 <div class="relative z-10">
                     <div class="grid grid-cols-3 gap-4 mb-8">
                         <div class="text-center">
-                            <p class="text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">10K+</p>
+                            <p id="stat-submissions" class="text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">0</p>
                             <p class="text-xs text-slate-500 mt-0.5">Submissions</p>
                         </div>
                         <div class="text-center border-l border-r border-slate-200 dark:border-slate-800/50">
-                            <p class="text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">500+</p>
+                            <p id="stat-problems" class="text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">0</p>
                             <p class="text-xs text-slate-500 mt-0.5">Problems</p>
                         </div>
                         <div class="text-center">
-                            <p class="text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">98%</p>
+                            <p id="stat-accuracy" class="text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">0</p>
                             <p class="text-xs text-slate-500 mt-0.5">Accuracy</p>
                         </div>
                     </div>
@@ -207,6 +213,39 @@
                         A secure, role-based competitive programming platform built for contestants, judges, and administrators.
                     </p>
                 </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const animateValue = (id, start, end, duration, suffix = '', isK = false) => {
+                            const obj = document.getElementById(id);
+                            if (!obj) return;
+                            let startTimestamp = null;
+                            const step = (timestamp) => {
+                                if (!startTimestamp) startTimestamp = timestamp;
+                                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                                const easeProgress = 1 - Math.pow(1 - progress, 4);
+                                let currentVal = Math.floor(easeProgress * (end - start) + start);
+                                
+                                if (isK && currentVal >= 1000) {
+                                    obj.innerHTML = (currentVal / 1000).toFixed(1).replace('.0', '') + 'K' + suffix;
+                                } else {
+                                    obj.innerHTML = currentVal + suffix;
+                                }
+                                
+                                if (progress < 1) {
+                                    window.requestAnimationFrame(step);
+                                }
+                            };
+                            window.requestAnimationFrame(step);
+                        };
+
+                        setTimeout(() => {
+                            animateValue('stat-submissions', 0, {{ $totalSubmissions }}, 2500, '+', true);
+                            animateValue('stat-problems', 0, {{ $totalProblems }}, 2500, '+', false);
+                            animateValue('stat-accuracy', 0, {{ $accuracy }}, 2500, '%', false);
+                        }, 400);
+                    });
+                </script>
             </div>
 
             {{-- ═══════════════════════════════════════════════

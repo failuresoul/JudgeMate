@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class NotificationController extends Controller
 {
@@ -32,5 +33,20 @@ class NotificationController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Mark a notification as read and redirect to its URL.
+     */
+    public function redirect(Request $request, $id): RedirectResponse
+    {
+        $notification = $request->user()->notifications()->findOrFail($id);
+        
+        if ($notification->unread()) {
+            $notification->markAsRead();
+        }
+
+        $url = $notification->data['url'] ?? route('dashboard');
+        return redirect()->to($url);
     }
 }

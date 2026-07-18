@@ -7,6 +7,9 @@ use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use App\Models\User;
+use App\Notifications\BlogApproved;
+use Illuminate\Support\Facades\Notification;
 
 class BlogController extends Controller
 {
@@ -32,6 +35,10 @@ class BlogController extends Controller
 
         if ($validated['action'] === 'approve') {
             $blog->update(['is_approved' => true]);
+            
+            $contestants = User::role('Contestant')->get();
+            Notification::send($contestants, new BlogApproved($blog));
+
             return back()->with('status', 'Blog approved successfully. It is now visible to contestants.');
         } else {
             // Delete the image from storage if it exists

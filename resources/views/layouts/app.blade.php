@@ -120,21 +120,12 @@
 
                     <!-- Notifications -->
                     @auth
-                        <div class="relative" x-data="{ unreadCount: 0 }" x-init="
-                            fetch('{{ route('notifications.unread-count') }}', { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
-                                .then(res => res.json())
-                                .then(data => unreadCount = data.unread_count || 0)
-                                .catch(err => console.error(err));
-                        ">
+                        <div class="relative" x-data="{ openNotifications: false, unreadCount: {{ auth()->user()->unreadNotifications()->count() }} }">
                             <button
+                                @click="openNotifications = !openNotifications"
+                                @click.outside="openNotifications = false"
                                 class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors focus:outline-none"
-                                @click="
-                                if (unreadCount > 0) {
-                                    fetch('{{ route('notifications.mark-read') }}', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest' } })
-                                    .then(res => res.json())
-                                    .then(data => { if(data.success) unreadCount = 0; });
-                                }
-                            ">
+                            >
                                 <span class="sr-only">Notifications</span>
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -144,6 +135,44 @@
                                     class="absolute top-1 right-1 flex items-center justify-center px-1 py-0.5 text-[9px] font-bold leading-none text-white bg-indigo-600 rounded-full min-w-[14px]"
                                     style="display: none;"></span>
                             </button>
+
+                            <!-- Notifications Dropdown -->
+                            <div x-show="openNotifications" x-transition
+                                class="absolute right-0 mt-2 w-80 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl overflow-hidden py-1 z-50"
+                                style="display: none;">
+                                <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                                    <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Notifications</h3>
+                                    <button @click="fetch('{{ route('notifications.mark-read') }}', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' } }).then(() => unreadCount = 0)" class="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">Mark all read</button>
+                                </div>
+                                <div class="max-h-[300px] overflow-y-auto">
+                                    @forelse(auth()->user()->notifications()->take(5)->get() as $notification)
+                                        <a href="{{ route('notifications.redirect', $notification->id) }}" 
+                                           class="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors {{ $notification->unread() ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : '' }}">
+                                            <div class="text-xl shrink-0 mt-0.5">
+                                                {{ $notification->data['icon'] ?? '🔔' }}
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+                                                    {{ $notification->data['title'] ?? 'Notification' }}
+                                                </p>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">
+                                                    {{ $notification->data['message'] ?? 'You have a new notification.' }}
+                                                </p>
+                                                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
+                                                    {{ $notification->created_at->diffForHumans() }}
+                                                </p>
+                                            </div>
+                                            @if($notification->unread())
+                                                <div class="shrink-0 w-2 h-2 rounded-full bg-indigo-600 mt-2"></div>
+                                            @endif
+                                        </a>
+                                    @empty
+                                        <div class="px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                                            No recent notifications.
+                                        </div>
+                                    @endforelse
+                                </div>
+                            </div>
                         </div>
                     @endauth
 

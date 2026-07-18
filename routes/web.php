@@ -108,11 +108,13 @@ Route::middleware(['auth', 'approved'])->group(function () {
         ->name('problems.toggle-publish')
         ->middleware(['role:Admin']);
     Route::post('problems/{problem}/submissions', [SubmissionController::class, 'store'])->name('problems.submissions.store');
+    Route::get('submissions/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
     Route::get('submissions/{submission}/status', [SubmissionController::class, 'status'])->name('submissions.status');
 
     // Notifications routes
     Route::get('notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
     Route::post('notifications/mark-read', [\App\Http\Controllers\NotificationController::class, 'markRead'])->name('notifications.mark-read');
+    Route::get('notifications/{id}/redirect', [\App\Http\Controllers\NotificationController::class, 'redirect'])->name('notifications.redirect');
 });
 
 require __DIR__.'/auth.php';

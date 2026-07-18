@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Badge;
 use App\Models\Submission;
+use App\Notifications\BadgeEarned;
 use Illuminate\Support\Facades\DB;
 
 class BadgeService
@@ -68,6 +69,7 @@ class BadgeService
 
         if (!$exists) {
             $user->badges()->attach($badge->id, ['awarded_at' => now()]);
+            $user->notify(new BadgeEarned($badge));
         }
     }
 }

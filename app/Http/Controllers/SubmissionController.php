@@ -131,6 +131,26 @@ class SubmissionController extends Controller
     }
 
     /**
+     * Display the specified submission's details (code, verdict).
+     */
+    public function show(Submission $submission): View
+    {
+        $user = auth()->user();
+
+        $isOwner = $submission->user_id === $user->id;
+        $isAdmin = $user->hasRole('Admin');
+        $isProblemOwner = $user->hasRole('ProblemSetter') && $submission->problem->created_by === $user->id;
+
+        if (!$isOwner && !$isAdmin && !$isProblemOwner) {
+            abort(403, 'Unauthorized access to submission.');
+        }
+
+        $submission->load(['problem', 'user', 'contest']);
+
+        return view('submissions.show', compact('submission'));
+    }
+
+    /**
      * Get the status of a specific submission (JSON endpoint for polling).
      */
     public function status(Submission $submission)

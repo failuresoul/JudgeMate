@@ -10,6 +10,9 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use App\Models\User;
+use App\Notifications\ContestPublished;
+use Illuminate\Support\Facades\Notification;
 
 class ContestController extends Controller implements HasMiddleware
 {
@@ -249,6 +252,10 @@ class ContestController extends Controller implements HasMiddleware
     public function approve(Request $request, Contest $contest): RedirectResponse
     {
         $contest->update(['is_approved' => true]);
+        
+        $contestants = User::role('Contestant')->get();
+        Notification::send($contestants, new ContestPublished($contest));
+
         return redirect()->route('contests.index')
             ->with('success', 'Contest approved successfully.');
     }

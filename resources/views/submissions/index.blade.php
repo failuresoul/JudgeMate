@@ -42,6 +42,7 @@
                         <th scope="col" class="px-4 py-3 whitespace-nowrap">Status</th>
                         <th scope="col" class="px-4 py-3 w-full">Verdict</th>
                         <th scope="col" class="px-4 py-3 whitespace-nowrap text-right">Submitted At</th>
+                        <th scope="col" class="px-4 py-3 whitespace-nowrap text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 bg-white dark:bg-slate-950/20">
@@ -95,10 +96,18 @@
                             <td class="px-4 py-3 whitespace-nowrap text-slate-500 dark:text-slate-400 text-right">
                                 {{ $submission->submitted_at->diffForHumans() }}
                             </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-right">
+                                <a href="{{ route('submissions.show', $submission) }}" class="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 px-3 py-1.5 rounded-lg transition-colors">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                    </svg>
+                                    View Code
+                                </a>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="{{ (auth()->user()->hasRole('Admin') || auth()->user()->hasRole('ProblemSetter')) ? 6 : 5 }}" class="px-6 py-10 text-center text-slate-500">
+                            <td colspan="{{ (auth()->user()->hasRole('Admin') || auth()->user()->hasRole('ProblemSetter')) ? 7 : 6 }}" class="px-6 py-10 text-center text-slate-500">
                                 <svg class="mx-auto h-12 w-12 text-slate-400 dark:text-slate-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                 </svg>
