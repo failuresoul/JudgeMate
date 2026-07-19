@@ -29,7 +29,7 @@ class BlogApproved extends Notification
             'title' => 'New Inspiration',
             'message' => "New post: {$this->blog->title}",
             'icon' => '📝',
-            'url' => route('blogs.show', $this->blog)
+            'url' => route('blogs.index')
         ];
     }
 }

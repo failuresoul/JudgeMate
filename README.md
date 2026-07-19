@@ -41,7 +41,7 @@ Whether you're running a school competition or practicing classic CP algorithms,
 
 ## 🛠️ Tech Stack
 
-- **Backend:** [Laravel 11](https://laravel.com/) (PHP 8.2+)
+- **Backend:** [Laravel 12](https://laravel.com/) (PHP 8.2+)
 - **Frontend UI:** Blade Templates, [Tailwind CSS](https://tailwindcss.com/) (v3.4), [Alpine.js](https://alpinejs.dev/)
 - **Asset Bundling:** [Vite](https://vitejs.dev/)
 - **Database:** MySQL / SQLite
